@@ -1,0 +1,32 @@
+{
+  "name": "shoply-sdk",
+  "version": "beta.0.0.1",
+  "license": "MIT",
+  "description": "SDK for Shoply Stores",
+  "main": "dist/index.js",
+  "module": "dist/index.mjs",
+  "types": "dist/index.d.ts",
+  "scripts": {
+    "lint": "tsc",
+    "build": "tsup src/index.ts --format cjs,esm --minify --dts --out-dir dist",
+    "release": "pnpm run build && changeset publish"
+  },
+  "dependencies": {
+    "axios": "^1.7.7"
+  },
+  "devDependencies": {
+    "@changesets/cli": "^2.27.9",
+    "pnpm": "^9.12.2",
+    "tsup": "^8.3.0",
+    "typescript": "^5.6.3"
+  },
+  "keywords": [
+    "shoply",
+    "sdk",
+    "store",
+    "ecommerce",
+    "shopify",
+    "woocommerce"
+  ],
+  "author": "Shoply"
+}
