@@ -1,4 +1,23 @@
+import type { Cart } from "./cart.types";
+import type { User } from "./user.types";
 
+
+export interface ShoplySDKConfigCallbacks {
+	/** Function that will be called whenever new access token is generated and received from server */
+	onAccessToken?: (accessToken: string | undefined) => void;
+
+	/** Function that will be called whenever new refresh token is generated and received from server */
+	onRefreshToken?: (refreshToken: string| undefined) => void;
+
+	/** Function that will be called whenever new user context object is generated and received from server */
+	onUser?: (user: User| undefined) => void;
+
+	/** Function that will be called whenever new cart context object is generated and received from server */
+	onCart?: (cart: Cart| undefined) => void;
+
+	/** Function that will be called whenever userId received from server */
+	onUserId?: (userId: string| undefined) => void;
+}
 
 export interface ShoplySDKConfig {
 	/** Base URL for request(s). Should be in the format of: https://api.[your-slug].shoply.[tld] */
@@ -39,14 +58,17 @@ export interface ShoplySDKConfig {
 
 	/** Function that will be runned to get refreshToken */
 	getRefreshToken?: () => string;
+
+	/** Callbacks for various events */
+	callbacks?: ShoplySDKConfigCallbacks;
 }
 
-export interface ShoplySDKConfigSetter extends Omit<ShoplySDKConfig, 'baseURL'> {
+export interface ShoplySDKConfigSetter extends Omit<ShoplySDKConfig, 'baseURL' | 'callbacks'> {
 	/** Update baseURL for all requests. */
 	baseURL?: string;
 }
 
-export interface ShoplySDKConfigForSingleRequest extends Omit<ShoplySDKConfig, 'baseURL' | 'getUserId' | 'getAccessToken' | 'getRefreshToken'> {
+export interface ShoplySDKConfigForSingleRequest extends Omit<ShoplySDKConfig, 'baseURL' | 'getUserId' | 'getAccessToken' | 'getRefreshToken' | 'callbacks'> {
 	/** Update baseURL for single request. */
 	baseURL?: string;
 };

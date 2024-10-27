@@ -6,10 +6,17 @@ export const isValidUrl = (str: any) => {
 	try {
 		const url = new URL(str);
 		if (url) {
-			console.log('url: ', url);
+			// console.log('url: ', url);
 			return true;
 		}
 	} catch(err) {}
+
+	return false;
+}
+
+export const isValidObjectId = (value: any) => {
+	const regex = /^[a-f\d]{24}$/i;
+	if (typeof value === 'string') return regex.test(value);
 
 	return false;
 }

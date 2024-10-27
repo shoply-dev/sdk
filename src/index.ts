@@ -3,12 +3,14 @@ import * as Validator from "./utils/validators.utils";
 import * as Errors from "./services/error.service";
 import { AxiosError } from 'axios';
 
-import type * as  ConfigTypes from "./types/config.types";
 import type { AxiosInstance } from "axios";
-import type * as UserTypes from './types/users.types';
+import type * as  ConfigTypes from "./types/config.types";
+import type * as UserTypes from './types/user.types';
 import type * as ContextTypes from './types/context.types';
 import type * as CartTypes from './types/cart.types';
+import type * as CategoryTypes from './types/category.types';
 import type * as SDKTypes from './types/sdk.types';
+import type * as GlobalTypes from './types/global.types';
 
 
 export class ShoplySDK {
@@ -21,27 +23,19 @@ export class ShoplySDK {
 	) {
 		if (!this.config.baseURL || !Validator.isValidUrl(this.config.baseURL)) throw new Error('Invalid baseURL');
 
-		this.axios = Axios.createAxiosInstance(this.config);
-	}
+		const instance = Axios.createAxiosInstance(this.config, this.context);
+		const axios = Axios.configureAxiosInterceptors(instance, this.config, this.context, (at, rt) => {
+			if (at) this.context.accessToken = at;
+			if (rt) this.context.refreshToken = rt;
+		});
+		this.axios = axios;
+
+		this._log('Config initialized: ' + JSON.stringify(this.config));
+	};
 
 	private _log = (msg: string, type: 'log' | 'warn' | 'error' = 'log') => {
 		if (this.debug) console[type](`ShoplySDK: ${msg}`);
 	};
-
-	internal: SDKTypes.ShoplySDKInternalMethods = {
-		setConfig: (config: ConfigTypes.ShoplySDKConfigSetter) => {
-			this.config = {
-				...this.config,
-				...config,
-			}
-
-			this.axios = Axios.createAxiosInstance(this.config as any);
-		},
-
-		getConfig: () => this.config,
-
-		getContext: () => this.context,
-	}
 
 	private prepareFetch = (
 		singleConfig: ConfigTypes.ShoplySDKConfigForSingleRequest = {}
@@ -50,11 +44,10 @@ export class ShoplySDK {
 			...this.config,
 			...singleConfig,
 		};
-		const axiosConfig = Axios.transformShoplyConfigToAxiosConfig(config);
+		const axiosConfig = Axios.transformShoplyConfigToAxiosConfig(config, this.context);
 		return axiosConfig;
-	}
+	};
 
-	// TODO - implement auto refresh token
 	private fetch = async <T extends any>(
 		obj: ConfigTypes.ShoplySDKFetchRequest
 	): Promise<SDKTypes.ShoplySDKResponse<T>> => {
@@ -96,10 +89,42 @@ export class ShoplySDK {
 				error
 			}
 		}
+	};
+
+	private setContext = (
+		context: ContextTypes.ShoplySDKContext
+	) => {
+		this.context = {
+			...this.context,
+			...context
+		};
+		this._log(`Context updated: ${JSON.stringify(this.context)}`);
 	}
 
+	internal: SDKTypes.ShoplySDKInternalMethods = {
+		setConfig: (config: ConfigTypes.ShoplySDKConfigSetter) => {
+			this.config = {
+				...this.config,
+				...config,
+			}
+
+			const instance = Axios.createAxiosInstance(this.config, this.context);
+			const axios = Axios.configureAxiosInterceptors(instance, this.config, this.context, (at, rt) => {
+				if (at) this.context.accessToken = at;
+				if (rt) this.context.refreshToken = rt;
+			});
+			this.axios = axios;
+
+			this._log('Config updated: ' + JSON.stringify(this.config));
+		},
+
+		getConfig: () => this.config,
+
+		getContext: () => this.context,
+	};
+
 	users: SDKTypes.ShoplySDKUserMethods = {
-		register: (
+		registerUser: (
 			data: UserTypes.RegisterUserRequestBody,
 			config?: ConfigTypes.ShoplySDKConfigForSingleRequest
 		) => this.fetch<{ user: UserTypes.User }>({
@@ -109,7 +134,7 @@ export class ShoplySDK {
 			config
 		}),
 
-		login: async (
+		loginUser: async (
 			data: UserTypes.LoginUserRequestBody,
 			config?: ConfigTypes.ShoplySDKConfigForSingleRequest
 		) => {
@@ -126,24 +151,61 @@ export class ShoplySDK {
 			});
 
 			if (response.data) {
-				this.context.user = response.data.user;
-				if (typeof response.data.cart === 'object') this.context.cart = response.data.cart;
-				this.context.accessToken = response.data.accessToken;
-				this.context.refreshToken = response.data.refreshToken;
+				const contextObj: ContextTypes.ShoplySDKContext = {
+					user: response.data.user,
+					userId: response.data.user._id,
+					accessToken: response.data.accessToken,
+					refreshToken: response.data.refreshToken,
+				};
+
+				this.config.callbacks?.onUser?.(contextObj.user);
+				this.config.callbacks?.onUserId?.(contextObj.userId);
+				this.config.callbacks?.onAccessToken?.(this.context.accessToken);
+				this.config.callbacks?.onRefreshToken?.(this.context.refreshToken);
+
+
+				if (typeof response.data.cart === 'object') {
+					contextObj.cart = response.data.cart;
+					this.config.callbacks?.onCart?.(contextObj.cart);
+				}
+
+				this.setContext(contextObj);
 			}
 
 			return response;
 		},
 
-		logout: async (
+		logoutUser: async (
 			refreshToken?: string,
-		) => this.fetch<{}>({
-			url: '/users/logout',
-			method: 'POST',
-			data: refreshToken ? { refreshToken } : undefined,
-		}),
+			config?: ConfigTypes.ShoplySDKConfigForSingleRequest
+		) => {
+			const response = await this.fetch<{}>({
+				url: '/users/logout',
+				method: 'POST',
+				data: refreshToken ? { refreshToken } : undefined,
+				config
+			});
 
-		verify: async (
+			if (response.data) {
+				this.setContext({
+					user: undefined,
+					userId: undefined,
+					cart: undefined,
+					accessToken: undefined,
+					refreshToken: undefined,
+				});
+
+				this.config.callbacks?.onUser?.(this.context.user);
+				this.config.callbacks?.onUserId?.(this.context.userId);
+				this.config.callbacks?.onCart?.(this.context.cart);
+				this.config.callbacks?.onAccessToken?.(this.context.accessToken);
+				this.config.callbacks?.onRefreshToken?.(this.context.refreshToken);
+			}
+
+			return response;
+		},
+
+		verifyUser: async (
 			accessToken?: string,
 			config?: ConfigTypes.ShoplySDKConfigForSingleRequest
 		) => {
@@ -158,9 +220,253 @@ export class ShoplySDK {
 			});
 
 			if (response.data) {
-				this.context.user = response.data.user;
-				if (typeof response.data.cart === 'object') this.context.cart = response.data.cart;
+				const contextObj: ContextTypes.ShoplySDKContext = {
+					user: response.data.user,
+					userId: response.data.user._id,
+				};
+				this.config.callbacks?.onUser?.(contextObj.user);
+				this.config.callbacks?.onUserId?.(contextObj.userId);
+				if (typeof response.data.cart === 'object') {
+					contextObj.cart = response.data.cart;
+					this.config.callbacks?.onCart?.(contextObj.cart);
+				}
+
+				if (accessToken) {
+					contextObj.accessToken = accessToken;
+					this.config.callbacks?.onAccessToken?.(accessToken);
+				}
+
+				this.setContext(contextObj);
 			}
+
+			return response;
+		},
+
+		forgotPassword: async (
+			email: string,
+			config?: ConfigTypes.ShoplySDKConfigForSingleRequest
+		) => this.fetch<{
+			email: string;
+			resetPasswordCodeSent: boolean;
+		}>({
+			url: '/users/forgot-password',
+			method: 'POST',
+			data: { email },
+			config
+		}),
+
+		resetPassword: async (
+			data: {
+				uid: string;
+				code: string;
+				password: string;
+				repeatPassword?: string;
+			},
+			config?: ConfigTypes.ShoplySDKConfigForSingleRequest
+		) => this.fetch<{
+			email: string;
+			passwordReset: boolean;
+		}>({
+			url: '/users/reset-password',
+			method: 'POST',
+			data,
+			config
+		}),
+
+		getUserProfile: async (
+			config?: ConfigTypes.ShoplySDKConfigForSingleRequest
+		) => {
+			const response = await this.fetch<{ user: UserTypes.User }>({
+				url: '/users/profile',
+				method: 'GET',
+				config
+			});
+
+			if (response.data) {
+				const contextObj: ContextTypes.ShoplySDKContext = {
+					user: response.data.user,
+					userId: response.data.user._id,
+				};
+				this.config.callbacks?.onUser?.(contextObj.user);
+				this.config.callbacks?.onUserId?.(contextObj.userId);
+				this.setContext(contextObj);
+			}
+
+			return response;
+		},
+
+		updateUserProfile: async (
+			data: UserTypes.UpdateUserProfileRequestBody,
+			config?: ConfigTypes.ShoplySDKConfigForSingleRequest
+		) => {
+			const response = await this.fetch<{ user: UserTypes.User }>({
+				url: '/users/profile',
+				method: 'POST',
+				data,
+				config
+			});
+
+			if (response.data) {
+				const contextObj: ContextTypes.ShoplySDKContext = {
+					user: response.data.user,
+					userId: response.data.user._id,
+				};
+				this.config.callbacks?.onUser?.(contextObj.user);
+				this.config.callbacks?.onUserId?.(contextObj.userId);
+				this.setContext(contextObj);
+			}
+
+			return response;
+		},
+
+		changeUserPassword: async (
+			data: UserTypes.ChangeUserPasswordRequestBody,
+			config?: ConfigTypes.ShoplySDKConfigForSingleRequest
+		) => this.fetch<{
+			passwordUpdated: boolean;
+		}>({
+			url: '/users/change-password',
+			method: 'POST',
+			data,
+			config
+		}),
+	};
+
+	categories: SDKTypes.ShoplySDKCategoryMethods = {
+		getCategories: async (
+			query?: CategoryTypes.CategoryQueryParams,
+			config?: ConfigTypes.ShoplySDKConfigForSingleRequest
+		) => this.fetch<{
+			items: CategoryTypes.Category[];
+			total: number;
+		}>({
+			url: '/categories',
+			method: 'GET',
+			params: query,
+			config
+		}),
+
+		getCategoryTree: async (
+			config?: ConfigTypes.ShoplySDKConfigForSingleRequest
+		) => this.fetch<CategoryTypes.CategoryTree[]>({
+			url: '/categories/tree',
+			method: 'GET',
+			config
+		}),
+
+		getSingleCategory: async (
+			identifier: string,
+			config?: ConfigTypes.ShoplySDKConfigForSingleRequest
+		) => {
+			if (!identifier || identifier === 'tree') return {
+				data: null,
+				error: {
+					status: 400,
+					message: identifier === 'tree' ? 'To get category tree call "getCategoryTree" method instead!' : 'Invalid identifier!',
+				}
+			}
+			if (!Validator.isValidObjectId(identifier)) identifier = encodeURIComponent(identifier);
+
+			const response = await this.fetch<CategoryTypes.Category>({
+				url: `/categories/${identifier}`,
+				method: 'GET',
+				config
+			});
+
+			return response;
+		},
+
+		getAttributesForCategory: async (
+			categoryId: string,
+			query?: GlobalTypes.DefaultQueryParams,
+			config?: ConfigTypes.ShoplySDKConfigForSingleRequest
+		) => {
+			if (!Validator.isValidObjectId(categoryId)) return {
+				data: null,
+				error: {
+					status: 400,
+					message: 'Invalid category id!'
+				}
+			}
+
+			const response = await this.fetch<{
+				items: CategoryTypes.CategoryAttribute[];
+				total: number;
+			}>({
+				url: `/categories/${categoryId}/attributes`,
+				method: 'GET',
+				params: query,
+				config
+			});
+
+			return response;
+		},
+
+		getBrandsForCategory: async (
+			categoryId: string,
+			query?: CategoryTypes.CategoryQueryParams,
+			config?: ConfigTypes.ShoplySDKConfigForSingleRequest
+		) => {
+			if (!Validator.isValidObjectId(categoryId)) return {
+				data: null,
+				error: {
+					status: 400,
+					message: 'Invalid category id!'
+				}
+			}
+
+			const response = await this.fetch<{
+				items: CategoryTypes.CategoryBrand[];
+				total: number;
+			}>({
+				url: `/categories/${categoryId}/brands`,
+				method: 'GET',
+				params: query,
+				config
+			});
+
+			return response;
+		},
+
+		getBrandsTree: async (
+			categoryId: string,
+			config?: ConfigTypes.ShoplySDKConfigForSingleRequest
+		) => {
+			if (!Validator.isValidObjectId(categoryId)) return {
+				data: null,
+				error: {
+					status: 400,
+					message: 'Invalid category id!'
+				}
+			}
+
+			const response = await this.fetch<CategoryTypes.BrandTree[]>({
+				url: `/categories/${categoryId}/brands/tree`,
+				method: 'GET',
+				config
+			});
+
+			return response;
+		},
+
+		getBrandModels: async (
+			categoryId: string,
+			brandId: string,
+			config?: ConfigTypes.ShoplySDKConfigForSingleRequest
+		) => {
+			if (!Validator.isValidObjectId(categoryId) || !Validator.isValidObjectId(brandId)) return {
+				data: null,
+				error: {
+					status: 400,
+					message: 'Invalid category or brand id!'
+				}
+			}
+
+			const response = await this.fetch<CategoryTypes.CategoryBrand[]>({
+				url: `/categories/${categoryId}/brands/${brandId}`,
+				method: 'GET',
+				config
+			});
 
 			return response;
 		},

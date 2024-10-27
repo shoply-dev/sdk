@@ -47,3 +47,23 @@ export interface LoginUserRequestBody {
 	/** Remember current user - will make tokens with older expiration dates if true */
 	rememberMe?: boolean;
 }
+
+export interface UpdateUserProfileRequestBody {
+	/** First and Last name */
+	name?: string;
+	/** Phone number */
+	phone?: string;
+	/** Language for user - if supplied and not one of available languages, a 400 error will be returned! Defaults to default lang for store */
+	lang?: string;
+	/** User address */
+	address?: UserAddress;
+}
+
+export interface ChangeUserPasswordRequestBody {
+	/** Old password */
+	oldPassword: string;
+	/** New password */
+	password: string;
+	/** Repeat password - if supplied a check on whether it's the same as password is made. */
+	repeatPassword?: string;
+}
