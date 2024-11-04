@@ -9,6 +9,7 @@ export interface ShoplyRequestError {
 	status: number;
 	message: string;
 	data?: any;
+	isInactive?: boolean;
 }
 
 export type ShoplySDKResponse<T extends any> = {

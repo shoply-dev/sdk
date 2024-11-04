@@ -62,6 +62,8 @@ export class ShoplySDK {
 				params: obj.params,
 			});
 
+			this._log(`response: ${JSON.stringify(response.data)}`);
+
 			if (response?.status && response.status >= 200 && response.status < 300 && response.data) {
 				return {
 					data: response.data.data,
