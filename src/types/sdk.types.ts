@@ -3,12 +3,16 @@ import type * as ConfigTypes from './config.types';
 import type * as CartTypes from './cart.types';
 import type * as ContextTypes from './context.types';
 import type * as CategoryTypes from './category.types';
-import type { DefaultQueryParams } from './global.types';
+import type * as ProductTypes from './product.types';
+import type * as GlobalTypes from './global.types';
+import type * as MetaTypes from './meta.types';
+import type * as OrderTypes from './order.types';
 
 export interface ShoplyRequestError {
 	status: number;
 	message: string;
 	data?: any;
+	isInactive?: boolean;
 }
 
 export type ShoplySDKResponse<T extends any> = {
@@ -66,7 +70,7 @@ export interface ShoplySDKUserMethods {
 		user: UserTypes.User;
 		cart?: CartTypes.Cart;
 	}>>;
-	
+
 	/** Create reset-password-code for user who forgot their email address */
 	forgotPassword: (
 		email: string,
@@ -120,7 +124,7 @@ export interface ShoplySDKCategoryMethods {
 		query?: CategoryTypes.CategoryQueryParams,
 		config?: ConfigTypes.ShoplySDKConfigForSingleRequest
 	) => Promise<ShoplySDKResponse<{
-		items: CategoryTypes.Category[]; 
+		items: CategoryTypes.Category[];
 		total: number;
 	}>>;
 
@@ -139,7 +143,7 @@ export interface ShoplySDKCategoryMethods {
 	/** Get attributes for category - by category id */
 	getAttributesForCategory: (
 		categoryId: string,
-		query?: DefaultQueryParams,
+		query?: CategoryTypes.AttributeQueryParams,
 		config?: ConfigTypes.ShoplySDKConfigForSingleRequest
 	) => Promise<ShoplySDKResponse<{
 		items: CategoryTypes.CategoryAttribute[];
@@ -149,7 +153,7 @@ export interface ShoplySDKCategoryMethods {
 	/** Get brands and brand models for category - by category id. If no query is passed - it returns all brands and model */
 	getBrandsForCategory: (
 		categoryId: string,
-		query?: CategoryTypes.CategoryQueryParams,
+		query?: CategoryTypes.BrandsQueryParams,
 		config?: ConfigTypes.ShoplySDKConfigForSingleRequest
 	) => Promise<ShoplySDKResponse<{
 		items: CategoryTypes.CategoryBrand[];
@@ -168,4 +172,170 @@ export interface ShoplySDKCategoryMethods {
 		brandId: string,
 		config?: ConfigTypes.ShoplySDKConfigForSingleRequest
 	) => Promise<ShoplySDKResponse<CategoryTypes.CategoryBrand[]>>;
+}
+
+export interface ShoplySDKProductMethods {
+	/** Paginate and/or search products. If no query is passed - behaves as 'get all products' and will return all items. But if at least one param is present in query - returns paginated results  */
+	getProducts: (
+		query?: ProductTypes.ProductsQueryParams,
+		config?: ConfigTypes.ShoplySDKConfigForSingleRequest
+	) => Promise<ShoplySDKResponse<{
+		items: ProductTypes.Product[];
+		total: number;
+	}>>;
+
+	/** Get single product by id or sku */
+	getSingleProduct: (
+		/** Id or sku of product */
+		identifier: string,
+		config?: ConfigTypes.ShoplySDKConfigForSingleRequest
+	) => Promise<ShoplySDKResponse<ProductTypes.Product>>;
+}
+
+export interface ShoplySDKCartMethods {
+	/** Get cart details */
+	getCart: (
+		config?: ConfigTypes.ShoplySDKConfigForSingleRequest
+	) => Promise<ShoplySDKResponse<{
+		userId: string;
+		cart: CartTypes.Cart;
+	}>>;
+
+	/** Add item to cart */
+	addToCart: (
+		productId: string,
+		quantity?: number,
+		config?: ConfigTypes.ShoplySDKConfigForSingleRequest
+	) => Promise<ShoplySDKResponse<{
+		userId: string;
+		cart: CartTypes.Cart;
+	}>>;
+
+	/** Remove from cart */
+	removeFromCart: (
+		productId: string,
+		quantity?: number,
+		config?: ConfigTypes.ShoplySDKConfigForSingleRequest
+	) => Promise<ShoplySDKResponse<{
+		userId: string;
+		cart: CartTypes.Cart;
+	}>>;
+
+	/** Clear cart */
+	clearCart: (
+		config?: ConfigTypes.ShoplySDKConfigForSingleRequest
+	) => Promise<ShoplySDKResponse<{
+		userId: string;
+		cart: CartTypes.Cart;
+	}>>;
+}
+
+export interface ShoplySDKOrderMethods {
+	/** Paginate orders for logged in user. If no query is passed - behaves as 'get all orders' and will return all items. But if at least one param is present in query (page/entries/sortField/sortType/search) - returns paginated results  */
+	getOrders: (
+		query?: GlobalTypes.DefaultQueryParams,
+		config?: ConfigTypes.ShoplySDKConfigForSingleRequest
+	) => Promise<ShoplySDKResponse<{
+		items: OrderTypes.Order[];
+		total: number;
+	}>>;
+
+	/** Get single order for logged in user */
+	getSingleOrder: (
+		/** Id or orderNumber of order */
+		identifier: string,
+		config?: ConfigTypes.ShoplySDKConfigForSingleRequest
+	) => Promise<ShoplySDKResponse<OrderTypes.Order>>;
+
+	/** Create order */
+	createOrder: (
+		data: {}, // TODO
+		config?: ConfigTypes.ShoplySDKConfigForSingleRequest
+	) => Promise<ShoplySDKResponse<{
+		order: OrderTypes.Order;
+		userId: string;
+		cart: CartTypes.Cart;
+
+		_redirectUrl?: string;
+		_redirectHtml?: string;
+	}>>;
+}
+
+export interface ShoplySDKMetaMethods {
+	/** Get a list of available payment methods. Note: payment is handled by server - you will not get sensitive data like api keys! */
+	getAvailablePaymentMethods: (
+		config?: ConfigTypes.ShoplySDKConfigForSingleRequest
+	) => Promise<ShoplySDKResponse<MetaTypes.PaymentMethodInterface[]>>;
+
+	/** Get a list of available shipping providers */
+	getAvailableShippingProviders: (
+		config?: ConfigTypes.ShoplySDKConfigForSingleRequest
+	) => Promise<ShoplySDKResponse<MetaTypes.ShippingMethodInterface[]>>;
+
+	/** Paginate site pages. If no query is passed - behaves as 'get all pages' and will return all items. But if at least one param is present in query (page/entries/sortField/sortType/search) - returns paginated results. Pages are always sent for the LANG in question. */
+	getPages: (
+		query?: GlobalTypes.DefaultQueryParams,
+		config?: ConfigTypes.ShoplySDKConfigForSingleRequest
+	) => Promise<ShoplySDKResponse<{
+		items: MetaTypes.MiniPageInterface[];
+		total: number;
+	}>>;
+
+	/** Get single page - by page slug */
+	getSinglePage: (
+		slug: string,
+		config?: ConfigTypes.ShoplySDKConfigForSingleRequest
+	) => Promise<ShoplySDKResponse<MetaTypes.PageInterface>>;
+
+	/** Get site contact settings */
+	getContactInfo: (
+		config?: ConfigTypes.ShoplySDKConfigForSingleRequest
+	) => Promise<ShoplySDKResponse<MetaTypes.ContactInterface>>;
+
+	/** Get site social links */
+	getSocialLinks: (
+		config?: ConfigTypes.ShoplySDKConfigForSingleRequest
+	) => Promise<ShoplySDKResponse<MetaTypes.SocialsInterface>>;
+
+	/** Paginate sliders. If no query is passed - behaves as 'get all sliders' and will return all items. But if at least one param is present in query (page/entries/sortField/sortType/search) - returns paginated results for LANG in question */
+	getSliders: (
+		query?: GlobalTypes.DefaultQueryParams,
+		config?: ConfigTypes.ShoplySDKConfigForSingleRequest
+	) => Promise<ShoplySDKResponse<{
+		items: MetaTypes.VisualsInterface[];
+		total: number;
+	}>>;
+
+	/** Paginate banners. If no query is passed - behaves as 'get all banners' and will return all items. But if at least one param is present in query (page/entries/sortField/sortType/search) - returns paginated results for LANG in question */
+	getBanners: (
+		query?: GlobalTypes.DefaultQueryParams,
+		config?: ConfigTypes.ShoplySDKConfigForSingleRequest
+	) => Promise<ShoplySDKResponse<{
+		items: MetaTypes.VisualsInterface[];
+		total: number;
+	}>>;
+
+	/** Get single slider for a specific position */
+	getSliderForPosition: (
+		position: string,
+		config?: ConfigTypes.ShoplySDKConfigForSingleRequest
+	) => Promise<ShoplySDKResponse<MetaTypes.VisualsInterface>>;
+
+	/** Get sliders for positions - sorted by the order of supplied positions */
+	getSlidersForPositions: (
+		positions: string[],
+		config?: ConfigTypes.ShoplySDKConfigForSingleRequest
+	) => Promise<ShoplySDKResponse<MetaTypes.VisualsInterface[]>>;
+
+	/** Get single banner for a specific position */
+	getBannerForPosition: (
+		position: string,
+		config?: ConfigTypes.ShoplySDKConfigForSingleRequest
+	) => Promise<ShoplySDKResponse<MetaTypes.VisualsInterface>>;
+
+	/** Get banners for positions - sorted by the order of supplied positions */
+	getBannersForPositions: (
+		positions: string[],
+		config?: ConfigTypes.ShoplySDKConfigForSingleRequest
+	) => Promise<ShoplySDKResponse<MetaTypes.VisualsInterface[]>>;
 }
