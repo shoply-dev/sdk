@@ -4,7 +4,21 @@ import type { AttributeTypesEnum, DefaultQueryParams } from "./global.types";
 export interface CategoryQueryParams extends DefaultQueryParams {
 	/** Id of parent category/brand */
 	parent?: string;
+	/** Allowed sort fields */
+	sortField?: 'id' | 'createdAt' | 'updatedAt' | 'name' | 'breadcrumb';
 }
+
+export interface BrandsQueryParams extends DefaultQueryParams {
+	/** Id of parent category/brand */
+	parent?: string;
+	/** Allowed sort fields */
+	sortField?: 'id' | 'createdAt' | 'updatedAt' | 'name';
+}
+
+export interface AttributeQueryParams extends DefaultQueryParams {
+	/** Allowed sort fields */
+	sortField?: 'id' | 'createdAt' | 'updatedAt' | 'name' | 'key' | 'type';
+};
 
 export interface CategoryBrand {
 	/** Id of category brand. Use _id instead of id */

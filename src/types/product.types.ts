@@ -1,9 +1,92 @@
-import type { DefaultQueryParams } from "./global.types";
+import type * as GlobalTypes from "./global.types";
 
 
-export interface ProductsQueryParams extends DefaultQueryParams {
+export interface ProductsQueryParams extends GlobalTypes.DefaultQueryParams {
 	/** Whether to calculate prices only for single quantity. If true - product object will have fields: price, regularPrice, fromQuantity, vatRate, and salesUnit. If not true or not passed - product object will have prices property with array of prices config (each of which has those fields) */
 	onlySingleQuantity?: boolean;
+	/** Allowed sort fields */
+	sortField?: 'id' | 'createdAt' | 'updatedAt' | 'name' | 'sku' | 'price';
+	/** Category breadcrumb */
+	category?: string;
+	/** Brand id */
+	brand?: string;
+	/** Brand model id */
+	brandModel?: string;
+	/** Attributes object - for key you attribute key. If you need to use $lte or $gte - add -min or -max to key name without spaces!*/
+	attributes?: Record<string, any>;
+}
+
+export interface ProductCategoryInterface {
+	/** Id of category */
+	id: string;
+	/** Name of category */
+	name: string | Record<string, string>;
+	/** Breadcrumb of category */
+	breadcrumb: string | Record<string, string>;
+}
+
+export interface ProductAttributeInterface {
+	/** Id of attribute */
+	id: string;
+	/** Unique key of attribute */
+	key: string;
+	/** Attribute name. If skipTransform in config is true - will be an object whose keys are different language keys and values actual names. If no skipTransform is passed to config -will be string - a name for passed (or default) lang */
+	name: string | Record<string, string>;
+	/** Attribute type */
+	type: GlobalTypes.AttributeTypesEnum;
+	/** Whether attribute is required */
+	isRequired: boolean;
+	/** Whether attribute is multilang */
+	isMultilang: boolean;
+	/** Whether attribute is included in product spec table */
+	isIncludedInProductSpecificationTable?: boolean;
+	/** Value of the attribute for product*/
+	value: any;
+	/** Attribute option id if attribute is select */
+	optionId?: string;
+	/** Attribute option ids if attribute is multiselect */
+	optionIds?: string[];
+}
+
+export interface ProductPriceInterface {
+	/** Price of product */
+	price: number;
+	/** Regular price of product - crossed out price */
+	regularPrice?: null | number;
+	/** From quantity */
+	fromQuantity: number;
+	/** VAT rate */
+	vatRate: number;
+	/** Sales unit */
+	salesUnit: GlobalTypes.SaleUnitsEnum;
+}
+
+export interface RelationsProduct {
+	/** Id of product */
+	_id: string;
+	/** Id of product */
+	id: string;
+	/** Name of product */
+	name: string;
+	/** SKU of product */
+	sku: string;
+	/** Thumbnail of product */
+	image: GlobalTypes.AssetInteface;
+	/** Price of product */
+	price: number;
+	/** Regular price of product */
+	regularPrice?: null | number;
+	/** From quantity */
+	fromQuantity: number;
+	/** VAT rate */
+	vatRate: number;
+	/** Sales unit */
+	salesUnit: GlobalTypes.SaleUnitsEnum;
+}
+
+export interface VariationProduct extends RelationsProduct {
+	/** Attributes of product */
+	attributes: ProductAttributeInterface[];
 }
 
 export interface Product {
@@ -25,4 +108,60 @@ export interface Product {
 	brand?: null | {id: string; name: string | Record<string, string>};
 	/** Brand model of product if any */
 	brandModel?: null | {id: string; name: string | Record<string, string>};
+	/** Number of items in stock */
+	inStock?: null | number;
+	/** Short description of product */
+	shortDescription?: string | Record<string, string>;
+	/** Description of product */
+	description?: string | Record<string, string>;
+	/** Condition of the product */
+	condition?: 'new' | 'used';
+	/** Main sales unit */
+	mainSalesUnit?: GlobalTypes.SaleUnitsEnum;
+	/** Product categories */
+	categories: ProductCategoryInterface[];
+	/** Product assets */
+	assets: GlobalTypes.AssetInteface[];
+	/** Product images - all will have type image */
+	images: GlobalTypes.AssetInteface[];
+	/** 360 degrees images */
+	images360: GlobalTypes.AssetInteface[];
+	/** Thumbnail image for the product */
+	thumbnail?: GlobalTypes.AssetInteface;
+	/** Product attributes */
+	attributes: ProductAttributeInterface[];
+	/** Shipping data */
+	shipping?: {
+		weight?: number;
+		dimensions?: {
+			length?: number;
+			width?: number;
+			height?: number;
+		}
+	}
+	/** Prices of the product - for 'getProducts' method it will be present only if you have not requested 'onlySingleQuantity'. If 'onlySingleQuantity' is true - you will get price config for product where fromQuantity is 1. If 'getSingleProduct' is the method - all prices are always returned */
+	prices?: ProductPriceInterface[];
+	/** Price for product - only present if 'onlySingleQuantity' is true and method is 'getProducts' */
+	price?: number;
+	/** Regular price for product - only present if 'onlySingleQuantity' is true and method is 'getProducts' */
+	regularPrice?: null | number;
+	/** From quantity - only present if 'onlySingleQuantity' is true and method is 'getProducts' */
+	fromQuantity?: number;
+	/** VAT rate - only present if 'onlySingleQuantity' is true and method is 'getProducts' */
+	vatRate?: number;
+	/** Sales unit - only present if 'onlySingleQuantity' is true and method is 'getProducts' */
+	salesUnit?: GlobalTypes.SaleUnitsEnum;
+	/** Product relations */
+	relations?: {
+		/** Name of the relation */
+		name: string;
+		/** Products in relation */
+		products: RelationsProduct[];
+	};
+	/** Product variations */
+	variations?: VariationProduct[];
+	/** Created at datetime string */
+	createdAt: string;
+	/** Updated at datetime string */
+	updatedAt: string;
 }

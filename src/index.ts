@@ -10,8 +10,10 @@ import type * as ContextTypes from './types/context.types';
 import type * as CartTypes from './types/cart.types';
 import type * as CategoryTypes from './types/category.types';
 import type * as SDKTypes from './types/sdk.types';
+import type * as ProductTypes from './types/product.types';
+import type * as MetaTypes from './types/meta.types';
+import type * as OrderTypes from './types/order.types';
 import type * as GlobalTypes from './types/global.types';
-
 
 export class ShoplySDK {
 	private axios: AxiosInstance;
@@ -380,7 +382,7 @@ export class ShoplySDK {
 
 		getAttributesForCategory: async (
 			categoryId: string,
-			query?: GlobalTypes.DefaultQueryParams,
+			query?: CategoryTypes.AttributeQueryParams,
 			config?: ConfigTypes.ShoplySDKConfigForSingleRequest
 		) => {
 			if (!Validator.isValidObjectId(categoryId)) return {
@@ -406,7 +408,7 @@ export class ShoplySDK {
 
 		getBrandsForCategory: async (
 			categoryId: string,
-			query?: CategoryTypes.CategoryQueryParams,
+			query?: CategoryTypes.BrandsQueryParams,
 			config?: ConfigTypes.ShoplySDKConfigForSingleRequest
 		) => {
 			if (!Validator.isValidObjectId(categoryId)) return {
@@ -472,6 +474,369 @@ export class ShoplySDK {
 
 			return response;
 		},
+	}
+
+	products: SDKTypes.ShoplySDKProductMethods = {
+		getProducts: async (
+			query?: ProductTypes.ProductsQueryParams,
+			config?: ConfigTypes.ShoplySDKConfigForSingleRequest
+		) => {
+
+			const params: any = {
+				...(query || {}),
+				onlySingleQuantity: query?.onlySingleQuantity ? 'true' : undefined,
+				category: query?.category ? encodeURIComponent(query.category) : undefined,
+			}
+			if (query?.attributes) {
+				for (const key in query.attributes) {
+					params[`attributes.${key}`] = query.attributes[key];
+				}
+			}
+
+			const response = await this.fetch<{
+				items: ProductTypes.Product[];
+				total: number;
+			}>({
+				method: 'GET',
+				url: '/products',
+				config,
+				params
+			});
+
+			return response;
+		},
+
+		getSingleProduct: async (
+			identifier: string,
+			config?: ConfigTypes.ShoplySDKConfigForSingleRequest
+		) => this.fetch<ProductTypes.Product>({
+			method: 'GET',
+			url: `/products/${encodeURIComponent(identifier)}`,
+			config,
+		}),
+	};
+
+	cart: SDKTypes.ShoplySDKCartMethods = {
+		getCart: async (
+			config?: ConfigTypes.ShoplySDKConfigForSingleRequest
+		) => {
+			const response = await this.fetch<{
+				userId: string;
+				cart: CartTypes.Cart;
+			}>({
+				url: '/cart',
+				method: 'GET',
+				config
+			});
+
+			if (response.data) {
+				const contextObj: ContextTypes.ShoplySDKContext = {
+					userId: response.data.userId,
+					cart: response.data.cart,
+				};
+				this.config.callbacks?.onUserId?.(contextObj.userId);
+				this.config.callbacks?.onCart?.(contextObj.cart);
+				this.setContext(contextObj);
+			}
+
+			return response;
+		},
+
+		addToCart: async (
+			productId: string,
+			quantity: number = 1,
+			config?: ConfigTypes.ShoplySDKConfigForSingleRequest
+		) => {
+			const response = await this.fetch<{
+				userId: string;
+				cart: CartTypes.Cart;
+			}>({
+				method: 'POST',
+				url: '/cart',
+				data: {
+					action: 'add',
+					productId,
+					quantity,
+				},
+				config,
+			});
+
+			if (response.data) {
+				const contextObj: ContextTypes.ShoplySDKContext = {
+					userId: response.data.userId,
+					cart: response.data.cart,
+				};
+				this.config.callbacks?.onUserId?.(contextObj.userId);
+				this.config.callbacks?.onCart?.(contextObj.cart);
+				this.setContext(contextObj);
+			}
+
+			return response;
+		},
+
+		removeFromCart: async (
+			productId: string,
+			quantity: number = 1,
+			config?: ConfigTypes.ShoplySDKConfigForSingleRequest
+		) => {
+			const response = await this.fetch<{
+				userId: string;
+				cart: CartTypes.Cart;
+			}>({
+				method: 'POST',
+				url: '/cart',
+				data: {
+					action: 'remove',
+					productId,
+					quantity,
+				},
+				config,
+			});
+
+			if (response.data) {
+				const contextObj: ContextTypes.ShoplySDKContext = {
+					userId: response.data.userId,
+					cart: response.data.cart,
+				};
+				this.config.callbacks?.onUserId?.(contextObj.userId);
+				this.config.callbacks?.onCart?.(contextObj.cart);
+				this.setContext(contextObj);
+			}
+
+			return response;
+		},
+
+		clearCart: async (
+			config?: ConfigTypes.ShoplySDKConfigForSingleRequest
+		) => {
+			const response = await this.fetch<{
+				userId: string;
+				cart: CartTypes.Cart;
+			}>({
+				method: 'POST',
+				url: '/cart',
+				data: {
+					action: 'clear',
+				},
+				config,
+			});
+
+			if (response.data) {
+				const contextObj: ContextTypes.ShoplySDKContext = {
+					userId: response.data.userId,
+					cart: response.data.cart,
+				};
+				this.config.callbacks?.onUserId?.(contextObj.userId);
+				this.config.callbacks?.onCart?.(contextObj.cart);
+				this.setContext(contextObj);
+			}
+
+			return response;
+		},
+	}
+
+	orders: SDKTypes.ShoplySDKOrderMethods = {
+		getOrders: async (
+			query?: GlobalTypes.DefaultQueryParams,
+			config?: ConfigTypes.ShoplySDKConfigForSingleRequest
+		) => this.fetch<{
+			items: OrderTypes.Order[];
+			total: number;
+		}>({
+			method: 'GET',
+			url: '/orders',
+			params: query,
+			config,
+		}),
+
+		getSingleOrder: async (
+			identifier: string,
+			config?: ConfigTypes.ShoplySDKConfigForSingleRequest
+		) => this.fetch<OrderTypes.Order>({
+			method: 'GET',
+			url: `/orders/${encodeURIComponent(identifier)}`,
+			config,
+		}),
+
+		createOrder: async (
+			data: {}, // TODO
+			config?: ConfigTypes.ShoplySDKConfigForSingleRequest
+		) => {
+			const response = await this.fetch<{
+				order: OrderTypes.Order;
+				userId: string;
+				cart: CartTypes.Cart;
+				_redirectUrl?: string;
+				_redirectHtml?: string;
+			}>({
+				method: 'POST',
+				url: '/orders',
+				data,
+				config,
+			});
+
+			if (response.data) {
+				const contextObj: ContextTypes.ShoplySDKContext = {
+					userId: response.data.userId,
+					cart: response.data.cart,
+				};
+				this.config.callbacks?.onUserId?.(contextObj.userId);
+				this.config.callbacks?.onCart?.(contextObj.cart);
+				this.setContext(contextObj);
+
+				if (response.data._redirectUrl) {
+					if (typeof window !== 'undefined') {
+						window.location.replace(response.data._redirectUrl);
+					}
+				}
+
+				if (response.data._redirectHtml) {
+					// TODO
+				}
+			}
+
+			return response;
+		},
+	};
+
+	meta: SDKTypes.ShoplySDKMetaMethods = {
+		getAvailablePaymentMethods: async (
+			config?: ConfigTypes.ShoplySDKConfigForSingleRequest
+		) => this.fetch<MetaTypes.PaymentMethodInterface[]>({
+			method: 'GET',
+			url: '/meta/payment-methods',
+			config,
+		}),
+
+		getAvailableShippingProviders: async (
+			config?: ConfigTypes.ShoplySDKConfigForSingleRequest
+		) => this.fetch<MetaTypes.ShippingMethodInterface[]>({
+			method: 'GET',
+			url: '/meta/shipping-providers',
+			config,
+		}),
+
+		getPages: async (
+			query?: GlobalTypes.DefaultQueryParams,
+			config?: ConfigTypes.ShoplySDKConfigForSingleRequest
+		) => this.fetch<{
+			items: MetaTypes.MiniPageInterface[];
+			total: number;
+		}>({
+			method: 'GET',
+			url: '/meta/pages',
+			params: query,
+			config,
+		}),
+
+		getSinglePage: async (
+			slug: string,
+			config?: ConfigTypes.ShoplySDKConfigForSingleRequest
+		) => this.fetch<MetaTypes.PageInterface>({
+			method: 'GET',
+			url: `/meta/pages/${encodeURIComponent(slug)}`,
+			config,
+		}),
+
+		getContactInfo: async (
+			config?: ConfigTypes.ShoplySDKConfigForSingleRequest
+		) => this.fetch<MetaTypes.ContactInterface>({
+			method: 'GET',
+			url: '/meta/contact',
+			config,
+		}),
+
+		getSocialLinks: async (
+			config?: ConfigTypes.ShoplySDKConfigForSingleRequest
+		) => this.fetch<MetaTypes.SocialsInterface>({
+			method: 'GET',
+			url: '/meta/socials',
+			config,
+		}),
+
+		getSliders: async (
+			query?: GlobalTypes.DefaultQueryParams,
+			config?: ConfigTypes.ShoplySDKConfigForSingleRequest
+		) => this.fetch<{
+			items: MetaTypes.VisualsInterface[];
+			total: number;
+		}>({
+			method: 'GET',
+			url: '/meta/visuals',
+			params: {
+				...(query || {}),
+				type: 'slider',
+			},
+			config,
+		}),
+
+		getBanners: async (
+			query?: GlobalTypes.DefaultQueryParams,
+			config?: ConfigTypes.ShoplySDKConfigForSingleRequest
+		) => this.fetch<{
+			items: MetaTypes.VisualsInterface[];
+			total: number;
+		}>({
+			method: 'GET',
+			url: '/meta/visuals',
+			params: {
+				...(query || {}),
+				type: 'banner',
+			},
+			config,
+		}),
+
+		getSliderForPosition: async (
+			position: string,
+			config?: ConfigTypes.ShoplySDKConfigForSingleRequest
+		) => this.fetch<MetaTypes.VisualsInterface>({
+			method: 'GET',
+			url: `/meta/visuals`,
+			config,
+			params: {
+				type: 'slider',
+				position: encodeURIComponent(position),
+			}
+		}),
+
+		getSlidersForPositions: async (
+			positions: string[],
+			config?: ConfigTypes.ShoplySDKConfigForSingleRequest
+		) => this.fetch<MetaTypes.VisualsInterface[]>({
+			method: 'GET',
+			url: `/meta/visuals`,
+			config,
+			params: {
+				type: 'slider',
+				positions: positions.map(encodeURIComponent).join(',')
+			}
+		}),
+
+		getBannerForPosition: async (
+			position: string,
+			config?: ConfigTypes.ShoplySDKConfigForSingleRequest
+		) => this.fetch<MetaTypes.VisualsInterface>({
+			method: 'GET',
+			url: `/meta/visuals`,
+			config,
+			params: {
+				type: 'banner',
+				position: encodeURIComponent(position),
+			}
+		}),
+
+		getBannersForPositions: async (
+			positions: string[],
+			config?: ConfigTypes.ShoplySDKConfigForSingleRequest
+		) => this.fetch<MetaTypes.VisualsInterface[]>({
+			method: 'GET',
+			url: `/meta/visuals`,
+			config,
+			params: {
+				type: 'banner',
+				positions: positions.map(encodeURIComponent).join(',')
+			}
+		}),
 	}
 };
 
