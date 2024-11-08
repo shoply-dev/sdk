@@ -249,15 +249,24 @@ export interface ShoplySDKOrderMethods {
 
 	/** Create order */
 	createOrder: (
-		data: {}, // TODO
+		data: OrderTypes.OrderData, // TODO
 		config?: ConfigTypes.ShoplySDKConfigForSingleRequest
 	) => Promise<ShoplySDKResponse<{
 		order: OrderTypes.Order;
+		orderId: string;
 		userId: string;
 		cart: CartTypes.Cart;
 
 		_redirectUrl?: string;
 		_redirectHtml?: string;
+	}>>;
+
+	/** Check order payment status - Remember to call this method from success page to trigger check */
+	checkOrderPaymentStatus: (
+		orderId: string,
+		config?: ConfigTypes.ShoplySDKConfigForSingleRequest
+	) => Promise<ShoplySDKResponse<{
+		order: OrderTypes.Order;
 	}>>;
 }
 

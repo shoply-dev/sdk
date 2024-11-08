@@ -664,6 +664,7 @@ export class ShoplySDK {
 		) => {
 			const response = await this.fetch<{
 				order: OrderTypes.Order;
+				orderId: string;
 				userId: string;
 				cart: CartTypes.Cart;
 				_redirectUrl?: string;
@@ -691,12 +692,26 @@ export class ShoplySDK {
 				}
 
 				if (response.data._redirectHtml) {
-					// TODO
+					if (typeof document !== 'undefined') {
+						// response.data._redirectHtml is body tag. replace current body with this one
+						document.body.innerHTML = response.data._redirectHtml;
+					}
 				}
 			}
 
 			return response;
 		},
+
+		checkOrderPaymentStatus: async (
+			orderId: string,
+			config?: ConfigTypes.ShoplySDKConfigForSingleRequest
+		) => this.fetch<{
+			order: OrderTypes.Order;
+		}>({
+			method: 'PUT',
+			url: `/orders/${encodeURIComponent(orderId)}/payment-status`,
+			config,
+		}),
 	};
 
 	meta: SDKTypes.ShoplySDKMetaMethods = {
