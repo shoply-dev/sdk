@@ -62,3 +62,25 @@ export interface Order {
     /** Updated at datetime string */
     updatedAt: string;
 }
+
+export interface OrderInputData {
+    /** Billing data */
+    billingData: OrderUser;
+    /** Shipping data */
+    shippingData: OrderUser;
+    /** Note from user */
+    note?: string;
+}
+
+export interface OrderData {
+    /** Order object */
+    order: OrderInputData;
+    /** Success url - where user will be redirected if payment is OK. orderId query param will be attached to the url so don't add that query param yourself. This param will hold id of order that can be then extracted from query and used to call checkOrderPaymentStatus if payment method is one of the online methods */
+    successUrl: string;
+    /** Failed url - where user will be redirected if payment is NOT ok. orderId query param will be attached to the url so don't add that query param yourself. This param will hold id of order that can be then extracted from query and used to call checkOrderPaymentStatus if payment method is one of the online methods */
+    failedUrl: string;
+    /** Selected payment method - one of the available keys to select payment method. Usually one of: cash, stripe, paypal, klarna */
+    paymentMethod: string;
+    /** Selected shipping provider - one of the available keys to select as shipping provider for the order. Make sure to check that shippingData.country is available for selected shipping provider */
+    shippingProvider: string;
+}
