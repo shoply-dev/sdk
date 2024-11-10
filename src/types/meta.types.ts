@@ -17,6 +17,11 @@ export interface PaymentMethodInterface {
     value: string;
 }
 
+export interface CountryInterface {
+    label: string;
+    value: string;
+}
+
 export interface ShippingMethodInterface {
     label: string;
     value: string;

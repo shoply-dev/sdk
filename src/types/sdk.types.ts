@@ -284,6 +284,11 @@ export interface ShoplySDKMetaMethods {
 		config?: ConfigTypes.ShoplySDKConfigForSingleRequest
 	) => Promise<ShoplySDKResponse<MetaTypes.ShippingMethodInterface[]>>;
 
+	/** Get a list of all available countries with valid country codes. Useful for country in user address. */
+	getCountries: (
+		config?: ConfigTypes.ShoplySDKConfigForSingleRequest
+	) => Promise<ShoplySDKResponse<MetaTypes.CountryInterface[]>>;
+
 	/** Paginate site pages. If no query is passed - behaves as 'get all pages' and will return all items. But if at least one param is present in query (page/entries/sortField/sortType/search) - returns paginated results. Pages are always sent for the LANG in question. */
 	getPages: (
 		query?: GlobalTypes.DefaultQueryParams,

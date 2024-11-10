@@ -32,7 +32,7 @@ export class ShoplySDK {
 		});
 		this.axios = axios;
 
-		this._log('Config initialized: ' + JSON.stringify(this.config));
+		this._log('Config initialized: ' + this.config);
 	};
 
 	private _log = (msg: string, type: 'log' | 'warn' | 'error' = 'log') => {
@@ -119,7 +119,7 @@ export class ShoplySDK {
 			});
 			this.axios = axios;
 
-			this._log('Config updated: ' + JSON.stringify(this.config));
+			this._log('Config updated: ' + this.config);
 		},
 
 		setCallbacks: (cbs: ConfigTypes.ShoplySDKConfigCallbacks) => {
@@ -737,6 +737,14 @@ export class ShoplySDK {
 		) => this.fetch<MetaTypes.ShippingMethodInterface[]>({
 			method: 'GET',
 			url: '/meta/shipping-providers',
+			config,
+		}),
+
+		getCountries: async (
+			config?: ConfigTypes.ShoplySDKConfigForSingleRequest
+		) => this.fetch<MetaTypes.CountryInterface[]>({
+			method: 'GET',
+			url: '/meta/all-countries',
 			config,
 		}),
 
