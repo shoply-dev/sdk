@@ -122,6 +122,15 @@ export class ShoplySDK {
 			this._log('Config updated: ' + JSON.stringify(this.config));
 		},
 
+		setCallbacks: (cbs: ConfigTypes.ShoplySDKConfigCallbacks) => {
+			this.config.callbacks = {
+				...(this.config.callbacks || {}),
+				...cbs
+			}
+
+			this._log('Callbacks updated: ' + this.config.callbacks);
+		},
+
 		getConfig: () => this.config,
 
 		getContext: () => this.context,

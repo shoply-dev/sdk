@@ -28,6 +28,9 @@ export interface ShoplySDKInternalMethods {
 	setConfig: (
 		config: ConfigTypes.ShoplySDKConfigSetter
 	) => void;
+	setCallbacks: (
+		callbacks: ConfigTypes.ShoplySDKConfigCallbacks
+	) => void;
 
 	/** Get current config */
 	getConfig: () => ConfigTypes.ShoplySDKConfig;

@@ -1,5 +1,11 @@
 # shoply-sdk
 
+## 0.0.6
+
+### Patch Changes
+
+- add updateCallbacks method to internal methods
+
 ## 0.0.5
 
 ### Patch Changes
