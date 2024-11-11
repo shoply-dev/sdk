@@ -45,19 +45,19 @@ export interface ShoplySDKConfig {
 	userId?: string;
 
 	/** Function that will be runned to get userId for cart */
-	getUserId?: () => string;
+	getUserId?: () => string | undefined;
 
 	/** Access token for request(s). If not set, and neither is the getter, will be picked up from internal context or cookies */
 	accessToken?: string;
 
 	/** Function that will be runned to get accessToken */
-	getAccessToken?: () => string;
+	getAccessToken?: () => string | undefined;
 
 	/** Refresh token for request(s). If not set, and neither is the getter, will be picked up from internal context or cookies */
 	refreshToken?: string;
 
 	/** Function that will be runned to get refreshToken */
-	getRefreshToken?: () => string;
+	getRefreshToken?: () => string | undefined;
 
 	/** Callbacks for various events */
 	callbacks?: ShoplySDKConfigCallbacks;

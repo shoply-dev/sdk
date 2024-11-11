@@ -1,5 +1,11 @@
 # shoply-sdk
 
+## 0.0.8
+
+### Patch Changes
+
+- added 2 missing apis + ts declarations fix + getter functions fix
+
 ## 0.0.7
 
 ### Patch Changes

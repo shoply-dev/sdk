@@ -1,6 +1,6 @@
 {
   "name": "shoply-sdk",
-  "version": "0.0.7",
+  "version": "0.0.8",
   "license": "MIT",
   "description": "SDK for Shoply Stores",
   "main": "dist/index.js",
@@ -8,7 +8,7 @@
   "types": "dist/index.d.ts",
   "scripts": {
     "lint": "tsc",
-    "build": "tsup src/index.ts --format cjs,esm --minify --dts --out-dir dist",
+    "build": "tsup src/index.ts --format cjs,esm --minify --experimental-dts --out-dir dist",
     "release": "pnpm run build && changeset publish"
   },
   "dependencies": {
@@ -16,6 +16,7 @@
   },
   "devDependencies": {
     "@changesets/cli": "^2.27.9",
+    "@microsoft/api-extractor": "^7.47.11",
     "pnpm": "^9.12.2",
     "tsup": "^8.3.0",
     "typescript": "^5.6.3"

@@ -114,8 +114,14 @@ export class ShoplySDK {
 
 			const instance = Axios.createAxiosInstance(this.config, this.context);
 			const axios = Axios.configureAxiosInterceptors(instance, this.config, this.context, (at, rt) => {
-				if (at) this.context.accessToken = at;
-				if (rt) this.context.refreshToken = rt;
+				if (at) {
+					this.context.accessToken = at;
+					this.config.callbacks?.onAccessToken?.(at);
+				}
+				if (rt) {
+					this.context.refreshToken = rt;
+					this.config.callbacks?.onRefreshToken?.(rt);
+				}
 			});
 			this.axios = axios;
 
@@ -868,6 +874,22 @@ export class ShoplySDK {
 				type: 'banner',
 				positions: positions.map(encodeURIComponent).join(',')
 			}
+		}),
+
+		getLangs: async (
+			config?: ConfigTypes.ShoplySDKConfigForSingleRequest
+		) => this.fetch<MetaTypes.LangsInterface>({
+			method: 'GET',
+			url: '/meta/langs',
+			config,
+		}),
+		
+		getSiteConfig: async (
+			config?: ConfigTypes.ShoplySDKConfigForSingleRequest
+		) => this.fetch<MetaTypes.SiteConfigInterface>({
+			method: 'GET',
+			url: '/meta/config',
+			config,
 		}),
 	}
 };

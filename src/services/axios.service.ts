@@ -8,14 +8,9 @@ export const transformShoplyConfigToAxiosConfig = (
 	config: ShoplySDKConfig,
 	context: ShoplySDKContext
 ): CreateAxiosDefaults => {
-
-	const accessToken = config?.accessToken ? (
-		config.accessToken
-	) : config?.getAccessToken ? (
-		config.getAccessToken()
-	) : context?.accessToken ? (
-		context.accessToken
-	) : undefined;
+	let accessToken = config?.accessToken;
+	if (!accessToken && config?.getAccessToken) accessToken = config.getAccessToken();
+	if (!accessToken && context?.accessToken) accessToken = context.accessToken;
 
 	const obj: CreateAxiosDefaults = {
 		baseURL: `${config.baseURL.replace(/\/$/, '')}/sdk/${config.version ?? 'v1'}`,
@@ -54,13 +49,10 @@ export const configureAxiosInterceptors = (
 	axiosInstance.interceptors.response.use(
 		(response) => response,
 		async (error) => {
-			const refreshToken = config?.refreshToken ? (
-				config.refreshToken
-			) : config?.getRefreshToken ? (
-				config.getRefreshToken()
-			) : context?.refreshToken ? (
-				context.refreshToken
-			) : undefined;
+			let refreshToken = config?.refreshToken;
+			if (!refreshToken && config?.getRefreshToken) refreshToken = config.getRefreshToken();
+			if (!refreshToken && context?.refreshToken) refreshToken = context.refreshToken
+			
 			if (!refreshToken) return Promise.reject(error);
 
 			const prev = error?.config;

@@ -355,4 +355,14 @@ export interface ShoplySDKMetaMethods {
 		positions: string[],
 		config?: ConfigTypes.ShoplySDKConfigForSingleRequest
 	) => Promise<ShoplySDKResponse<MetaTypes.VisualsInterface[]>>;
+
+	/** Get langs configuration */
+	getLangs: (
+		config?: ConfigTypes.ShoplySDKConfigForSingleRequest
+	) => Promise<ShoplySDKResponse<MetaTypes.LangsInterface>>;
+
+	/** Get site config (theme and theme settings) */
+	getSiteConfig: (
+		config?: ConfigTypes.ShoplySDKConfigForSingleRequest
+	) => Promise<ShoplySDKResponse<MetaTypes.SiteConfigInterface>>;
 }

@@ -70,3 +70,38 @@ export interface SocialsInterface {
     youtube?: string;
     tiktok?: string;
 }
+
+export interface LangsInterface {
+    langs: string[];
+    defaultLang: string;
+}
+
+export interface SeoInterface {
+    title?: string | Record<string, string>;
+    description?: string | Record<string, string>;
+    image?: GlobalTypes.AssetInteface;
+}
+
+export interface ColorSchemaInterface {
+    id: string;
+    background: { primary: string; secondary: string; tertiary: string; accent: string };
+    text: { primary: string; secondary: string; tertiary: string; accent: string };
+    white: string;
+    black: string;
+    red: string;
+    green: string;
+    blue: string;
+    border: string;
+    ligthGray: string;
+    gray: string;
+    darkGray: string;
+}
+
+export interface SiteConfigInterface {
+    template: string;
+    logo?: GlobalTypes.AssetInteface;
+    footerLogo?: GlobalTypes.AssetInteface;
+    favicon?: GlobalTypes.AssetInteface;
+    seo: SeoInterface;
+    colorScheme: ColorSchemaInterface;
+}

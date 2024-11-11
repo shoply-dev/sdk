@@ -1,5 +1,3 @@
-
-
 export const isValidUrl = (str: any) => {
 	if (typeof str !== 'string') return false;
 	
