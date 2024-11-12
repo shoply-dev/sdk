@@ -97,6 +97,8 @@ export interface CategoryInTree {
 	name: string | Record<string, string>;
 	/** Breadcrumb of category. If skipTransform in config is true - will be an object whose keys are different language keys and values actual names. If no skipTransform is passed to config -will be string - a name for passed (or default) lang */
 	breadcrumb: string | Record<string, string>;
+	/** Count of products in that category (if has subcategories, includes them too). Only supplied if getProductCount is true */
+	productsCount?: number;
 }
 
 export interface CategoryTree extends CategoryInTree {

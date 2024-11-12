@@ -133,6 +133,7 @@ export interface ShoplySDKCategoryMethods {
 
 	/** Get category tree */
 	getCategoryTree: (
+		getProductCount?: boolean,
 		config?: ConfigTypes.ShoplySDKConfigForSingleRequest
 	) => Promise<ShoplySDKResponse<CategoryTypes.CategoryTree[]>>;
 
@@ -365,4 +366,9 @@ export interface ShoplySDKMetaMethods {
 	getSiteConfig: (
 		config?: ConfigTypes.ShoplySDKConfigForSingleRequest
 	) => Promise<ShoplySDKResponse<MetaTypes.SiteConfigInterface>>;
+
+	/** Get currency data */
+	getCurrencyData: (
+		config?: ConfigTypes.ShoplySDKConfigForSingleRequest
+	) => Promise<ShoplySDKResponse<MetaTypes.CurrencyDataInterface>>;
 }

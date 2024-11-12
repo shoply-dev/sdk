@@ -366,11 +366,13 @@ export class ShoplySDK {
 		}),
 
 		getCategoryTree: async (
+			getProductCount: boolean = false,
 			config?: ConfigTypes.ShoplySDKConfigForSingleRequest
 		) => this.fetch<CategoryTypes.CategoryTree[]>({
 			url: '/categories/tree',
 			method: 'GET',
-			config
+			config,
+			params: getProductCount ? { getProductCount: 'true' } : undefined
 		}),
 
 		getSingleCategory: async (
@@ -883,7 +885,7 @@ export class ShoplySDK {
 			url: '/meta/langs',
 			config,
 		}),
-		
+
 		getSiteConfig: async (
 			config?: ConfigTypes.ShoplySDKConfigForSingleRequest
 		) => this.fetch<MetaTypes.SiteConfigInterface>({
@@ -891,6 +893,14 @@ export class ShoplySDK {
 			url: '/meta/config',
 			config,
 		}),
+
+		getCurrencyData: async (
+			config?: ConfigTypes.ShoplySDKConfigForSingleRequest
+		) => this.fetch<MetaTypes.CurrencyDataInterface>({
+			method: 'GET',
+			url: '/meta/currency-data',
+			config,
+		})
 	}
 };
 

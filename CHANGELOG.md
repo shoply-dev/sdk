@@ -1,5 +1,11 @@
 # shoply-sdk
 
+## 0.0.9
+
+### Patch Changes
+
+- added currency meta route + productsCount in category tree
+
 ## 0.0.8
 
 ### Patch Changes
