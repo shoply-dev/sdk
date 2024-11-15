@@ -1,5 +1,11 @@
 # shoply-sdk
 
+## 0.0.10
+
+### Patch Changes
+
+- fixes and additions to apis and types
+
 ## 0.0.9
 
 ### Patch Changes
