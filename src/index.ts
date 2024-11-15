@@ -372,7 +372,7 @@ export class ShoplySDK {
 			url: '/categories/tree',
 			method: 'GET',
 			config,
-			params: getProductCount ? { getProductCount: 'true' } : undefined
+			params: getProductCount ? { productCount: 'true' } : undefined
 		}),
 
 		getSingleCategory: async (
@@ -502,8 +502,55 @@ export class ShoplySDK {
 			const params: any = {
 				...(query || {}),
 				onlySingleQuantity: query?.onlySingleQuantity ? 'true' : undefined,
-				category: query?.category ? encodeURIComponent(query.category) : undefined,
+				category: query?.category ? (
+					typeof query.category === 'string' ? (
+						encodeURIComponent(query.category)
+					) : (
+						Array.isArray(query.category) && query.category.length > 0 ? (
+							query.category.map(cat => encodeURIComponent(cat)).join(',')
+						) : (
+							undefined
+						)
+					)
+				) : undefined,
+				brand: query?.brand ? (
+					typeof query.brand === 'string' ? (
+						encodeURIComponent(query.brand)
+					) : (
+						Array.isArray(query.brand) && query.brand.length > 0 ? (
+							query.brand.map(br => encodeURIComponent(br)).join(',')
+						) : (
+							undefined
+						)
+					)
+				) : undefined,	
+				model: query?.brandModel ? (
+					typeof query.brandModel === 'string' ? (
+						encodeURIComponent(query.brandModel)
+					) : (
+						Array.isArray(query.brandModel) && query.brandModel.length > 0 ? (
+							query.brandModel.map(bm => encodeURIComponent(bm)).join(',')
+						) : (
+							undefined
+						)
+					)
+				) : undefined,
+				omit: query?.omitFields ? (
+					typeof query.omitFields === 'string' ? (
+						'*'
+					) : (
+						Array.isArray(query.omitFields) && query.omitFields.length > 0 ? (
+							query.omitFields.join(',')
+						) : (
+							undefined
+						)
+					)
+				) : (
+					undefined
+				),
 			}
+			delete params.omitFields;
+			delete params.brandModel;
 			if (query?.attributes) {
 				for (const key in query.attributes) {
 					params[`attributes.${key}`] = query.attributes[key];
@@ -887,11 +934,13 @@ export class ShoplySDK {
 		}),
 
 		getSiteConfig: async (
+			getRbgValuesForColors?: boolean,
 			config?: ConfigTypes.ShoplySDKConfigForSingleRequest
 		) => this.fetch<MetaTypes.SiteConfigInterface>({
 			method: 'GET',
 			url: '/meta/config',
 			config,
+			params: getRbgValuesForColors ? { rgb: 'true' } : undefined
 		}),
 
 		getCurrencyData: async (

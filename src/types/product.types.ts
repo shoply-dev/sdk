@@ -1,5 +1,30 @@
 import type * as GlobalTypes from "./global.types";
 
+export type ProductOmitFieldsEnum =
+	| 'isActive'
+	| 'isInSearch'
+	| 'eanCode'
+	| 'mainSalesUnit'
+	| 'brand'
+	| 'brandModel'
+	| 'shortDescription'
+	| 'description'
+	| 'categories'
+	| 'assets'
+	| 'images'
+	| 'images360'
+	| 'attributes'
+	| 'shipping'
+	| 'createdAt'
+	| 'updatedAt'
+	| 'seo'
+	| 'relations'
+	| 'variations'
+	| 'vatRate'
+	| 'fromQuantity'
+	| 'salesUnit'
+	| 'condition'
+	| 'warehouses';
 
 export interface ProductsQueryParams extends GlobalTypes.DefaultQueryParams {
 	/** Whether to calculate prices only for single quantity. If true - product object will have fields: price, regularPrice, fromQuantity, vatRate, and salesUnit. If not true or not passed - product object will have prices property with array of prices config (each of which has those fields) */
@@ -7,13 +32,21 @@ export interface ProductsQueryParams extends GlobalTypes.DefaultQueryParams {
 	/** Allowed sort fields */
 	sortField?: 'id' | 'createdAt' | 'updatedAt' | 'name' | 'sku' | 'price';
 	/** Category breadcrumb */
-	category?: string;
+	category?: string | string[];
 	/** Brand id */
-	brand?: string;
+	brand?: string | string[];
 	/** Brand model id */
-	brandModel?: string;
-	/** Attributes object - for key you attribute key. If you need to use $lte or $gte - add -min or -max to key name without spaces!*/
+	brandModel?: string | string[];
+	/** Attributes object - for key use attribute key. If you need to use $lte or $gte - add -min or -max to key name without spaces!*/
 	attributes?: Record<string, any>;
+	/** Fields to omit from return */
+	omitFields?: ProductOmitFieldsEnum[] | '*';
+	/** Price of products. */
+	price?: number;
+	/** Minimum price for products */
+	'price-min': number;
+	/** Maximum price for products */
+	'price-max': number;
 }
 
 export interface ProductCategoryInterface {
@@ -105,9 +138,9 @@ export interface Product {
 	/** Should product be visible in search (or in other places as a product card) */
 	isInSearch: boolean;
 	/** Brand of product if any */
-	brand?: null | {id: string; name: string | Record<string, string>};
+	brand?: null | { id: string; name: string | Record<string, string> };
 	/** Brand model of product if any */
-	brandModel?: null | {id: string; name: string | Record<string, string>};
+	brandModel?: null | { id: string; name: string | Record<string, string> };
 	/** Number of items in stock */
 	inStock?: null | number;
 	/** Short description of product */

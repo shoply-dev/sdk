@@ -1,4 +1,4 @@
-import type { AttributeTypesEnum, DefaultQueryParams } from "./global.types";
+import type { AssetInteface, AttributeTypesEnum, DefaultQueryParams } from "./global.types";
 
 
 export interface CategoryQueryParams extends DefaultQueryParams {
@@ -67,6 +67,17 @@ export interface CategoryAttribute {
 	updatedAt?: string;
 }
 
+export interface CategoryVisualInterface {
+	/** Image */
+	image: {
+		desktop: AssetInteface;
+		tablet: AssetInteface;
+		mobile: AssetInteface;
+	};
+	/** Alt text */
+	alt: string;
+}
+
 export interface Category {
 	/** Id of category. Use instead of id. */
 	_id: string;
@@ -84,6 +95,8 @@ export interface Category {
 	hasChildren?: boolean;
 	/** Category attributes */
 	attributes?: CategoryAttribute[];
+	/** Category visual data */
+	visual?: CategoryVisualInterface;
 	/** Created at datetime string */
 	createdAt: string;
 	/** Updated at datetime string */
@@ -99,6 +112,8 @@ export interface CategoryInTree {
 	breadcrumb: string | Record<string, string>;
 	/** Count of products in that category (if has subcategories, includes them too). Only supplied if getProductCount is true */
 	productsCount?: number;
+	/** Visual of the category */
+	visual?: CategoryVisualInterface;
 }
 
 export interface CategoryTree extends CategoryInTree {

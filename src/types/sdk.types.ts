@@ -364,6 +364,7 @@ export interface ShoplySDKMetaMethods {
 
 	/** Get site config (theme and theme settings) */
 	getSiteConfig: (
+		getRbgValuesForColors?: boolean,
 		config?: ConfigTypes.ShoplySDKConfigForSingleRequest
 	) => Promise<ShoplySDKResponse<MetaTypes.SiteConfigInterface>>;
 
