@@ -372,4 +372,10 @@ export interface ShoplySDKMetaMethods {
 	getCurrencyData: (
 		config?: ConfigTypes.ShoplySDKConfigForSingleRequest
 	) => Promise<ShoplySDKResponse<MetaTypes.CurrencyDataInterface>>;
+
+	/** Get metadata for sitemap */
+	getSitemapData: (
+		type?: MetaTypes.SitemapDataTypeEnum,
+		config?: ConfigTypes.ShoplySDKConfigForSingleRequest
+	) => Promise<ShoplySDKResponse<MetaTypes.SitemapDataInterface>>;
 }

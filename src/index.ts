@@ -949,7 +949,16 @@ export class ShoplySDK {
 			method: 'GET',
 			url: '/meta/currency-data',
 			config,
-		})
+		}),
+
+		getSitemapData: async (
+			type?: MetaTypes.SitemapDataTypeEnum,
+			config?: ConfigTypes.ShoplySDKConfigForSingleRequest
+		) => this.fetch<MetaTypes.SitemapDataInterface>({
+			method: 'GET',
+			url: `/meta/sitemap-data/${type || 'all'}`,
+			config,
+		}),
 	}
 };
 

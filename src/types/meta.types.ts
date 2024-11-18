@@ -122,3 +122,33 @@ export interface CurrencyDataInterface {
         value: CurrencyEnum;
     }
 }
+
+export interface ProductsSitemapDataInterface {
+    _id: string;
+    name: Record<string, string>;
+    slug: Record<string, string>;
+    images: GlobalTypes.AssetInteface[];
+}
+
+export interface CategoriesSitemapDataInterface {
+    _id: string;
+    name: Record<string, string>;
+    breadcrumb: Record<string, string>;
+    image?: GlobalTypes.AssetInteface | null;
+}
+
+export interface PagesSitemapDataInterface {
+    _id: string;
+    lang: string;
+    title: string;
+    slug: string;
+    image?: GlobalTypes.AssetInteface | null;
+}
+
+export interface SitemapDataInterface {
+    products?: ProductsSitemapDataInterface[];
+    categories?: CategoriesSitemapDataInterface[];
+    pages?: PagesSitemapDataInterface[];
+}
+
+export type SitemapDataTypeEnum = 'products' | 'categories' | 'pages';
