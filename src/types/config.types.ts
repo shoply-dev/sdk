@@ -23,6 +23,9 @@ export interface ShoplySDKConfig {
 	/** Base URL for request(s). Should be in the format of: https://api.[your-slug].shoply.[tld] */
 	baseURL: string;
 
+	/** Automatically append baseURL to every path of an asset */
+	appendBaseURLtoAssets?: boolean;
+
 	/** Version of API to target. Will list out all available versions. Default is v1 */
 	version?: 'v1';
 

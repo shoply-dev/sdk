@@ -15,6 +15,8 @@ import type * as MetaTypes from './types/meta.types';
 import type * as OrderTypes from './types/order.types';
 import type * as GlobalTypes from './types/global.types';
 
+const AssetTypesEnum = ['image', 'video', 'document'];
+
 export class ShoplySDK {
 	private axios: AxiosInstance;
 	private context: ContextTypes.ShoplySDKContext = {};
@@ -50,11 +52,51 @@ export class ShoplySDK {
 		return axiosConfig;
 	};
 
+	private appendBaseURLtoAssets = (obj: any, baseUrl: string): any => {
+		if (typeof obj !== 'object') return obj;
+		if (Array.isArray(obj)) return obj.map(item => this.appendBaseURLtoAssets(item, baseUrl));
+		if (obj && 'type' in obj && obj.type && AssetTypesEnum.includes(obj.type)) {
+			if (obj.path) obj.path = baseUrl + obj.path;
+			if (obj.thumbnail) obj.thumbnail = baseUrl + obj.thumbnail;
+
+			return obj;
+		}
+
+		for (const key in obj) {
+			obj[key] = this.appendBaseURLtoAssets(obj[key], baseUrl);
+		}
+
+		return obj;
+	};
+
+	private removeIntegrationsObjectFromAssets = (obj: any): any => {
+		if (typeof obj !== 'object') return obj;
+		if (Array.isArray(obj)) return obj.map(item => this.removeIntegrationsObjectFromAssets(item));
+		if (obj && 'type' in obj && obj.type && AssetTypesEnum.includes(obj.type)) {
+			if ('integrations' in obj) delete obj.integrations;
+			return obj;
+		}
+
+		for (const key in obj) {
+			obj[key] = this.removeIntegrationsObjectFromAssets(obj[key]);
+		}
+
+		return obj;
+	}
+
 	private fetch = async <T extends any>(
 		obj: ConfigTypes.ShoplySDKFetchRequest
 	): Promise<SDKTypes.ShoplySDKResponse<T>> => {
 		try {
 			const config = this.prepareFetch(obj.config);
+
+			const appendBaseURLtoAssets = typeof obj.config?.appendBaseURLtoAssets === 'boolean' ? (
+				obj.config.appendBaseURLtoAssets
+			) : typeof this.config.appendBaseURLtoAssets === 'boolean' ? (
+				this.config.appendBaseURLtoAssets
+			) : (
+				false
+			);
 
 			const response = await this.axios({
 				...config as any,
@@ -67,8 +109,19 @@ export class ShoplySDK {
 			this._log(`response: ${JSON.stringify(response.data)}`);
 
 			if (response?.status && response.status >= 200 && response.status < 300 && response.data) {
+				const responseData = this.removeIntegrationsObjectFromAssets(response.data.data);
+
+				if (appendBaseURLtoAssets) {
+					const baseUrl = obj.config?.baseURL || this.config.baseURL;
+					const data = this.appendBaseURLtoAssets(responseData, baseUrl);
+					return {
+						data,
+						error: null
+					}
+				}
+
 				return {
-					data: response.data.data,
+					data: responseData,
 					error: null
 				}
 			}
@@ -386,7 +439,7 @@ export class ShoplySDK {
 					message: identifier === 'tree' ? 'To get category tree call "getCategoryTree" method instead!' : 'Invalid identifier!',
 				}
 			}
-			if (!Validator.isValidObjectId(identifier)) identifier = encodeURIComponent(identifier);
+			if (!Validator.isValidObjectId(identifier)) identifier = encodeURIComponent(decodeURIComponent(identifier));
 
 			const response = await this.fetch<CategoryTypes.Category>({
 				url: `/categories/${identifier}`,
@@ -504,10 +557,10 @@ export class ShoplySDK {
 				onlySingleQuantity: query?.onlySingleQuantity ? 'true' : undefined,
 				category: query?.category ? (
 					typeof query.category === 'string' ? (
-						encodeURIComponent(query.category)
+						encodeURIComponent(decodeURIComponent(query.category))
 					) : (
 						Array.isArray(query.category) && query.category.length > 0 ? (
-							query.category.map(cat => encodeURIComponent(cat)).join(',')
+							query.category.map(cat => encodeURIComponent(decodeURIComponent(cat))).join(',')
 						) : (
 							undefined
 						)
@@ -515,21 +568,21 @@ export class ShoplySDK {
 				) : undefined,
 				brand: query?.brand ? (
 					typeof query.brand === 'string' ? (
-						encodeURIComponent(query.brand)
+						encodeURIComponent(decodeURIComponent(query.brand))
 					) : (
 						Array.isArray(query.brand) && query.brand.length > 0 ? (
-							query.brand.map(br => encodeURIComponent(br)).join(',')
+							query.brand.map(br => encodeURIComponent(decodeURIComponent(br))).join(',')
 						) : (
 							undefined
 						)
 					)
-				) : undefined,	
+				) : undefined,
 				model: query?.brandModel ? (
 					typeof query.brandModel === 'string' ? (
-						encodeURIComponent(query.brandModel)
+						encodeURIComponent(decodeURIComponent(query.brandModel))
 					) : (
 						Array.isArray(query.brandModel) && query.brandModel.length > 0 ? (
-							query.brandModel.map(bm => encodeURIComponent(bm)).join(',')
+							query.brandModel.map(bm => encodeURIComponent(decodeURIComponent(bm))).join(',')
 						) : (
 							undefined
 						)
@@ -575,7 +628,7 @@ export class ShoplySDK {
 			config?: ConfigTypes.ShoplySDKConfigForSingleRequest
 		) => this.fetch<ProductTypes.Product>({
 			method: 'GET',
-			url: `/products/${encodeURIComponent(identifier)}`,
+			url: `/products/${encodeURIComponent(decodeURIComponent(identifier))}`,
 			config,
 		}),
 	};
@@ -718,7 +771,7 @@ export class ShoplySDK {
 			config?: ConfigTypes.ShoplySDKConfigForSingleRequest
 		) => this.fetch<OrderTypes.Order>({
 			method: 'GET',
-			url: `/orders/${encodeURIComponent(identifier)}`,
+			url: `/orders/${encodeURIComponent(decodeURIComponent(identifier))}`,
 			config,
 		}),
 
@@ -773,7 +826,7 @@ export class ShoplySDK {
 			order: OrderTypes.Order;
 		}>({
 			method: 'PUT',
-			url: `/orders/${encodeURIComponent(orderId)}/payment-status`,
+			url: `/orders/${encodeURIComponent(decodeURIComponent(orderId))}/payment-status`,
 			config,
 		}),
 	};
@@ -821,7 +874,7 @@ export class ShoplySDK {
 			config?: ConfigTypes.ShoplySDKConfigForSingleRequest
 		) => this.fetch<MetaTypes.PageInterface>({
 			method: 'GET',
-			url: `/meta/pages/${encodeURIComponent(slug)}`,
+			url: `/meta/pages/${encodeURIComponent(decodeURIComponent(slug))}`,
 			config,
 		}),
 
@@ -882,7 +935,7 @@ export class ShoplySDK {
 			config,
 			params: {
 				type: 'slider',
-				position: encodeURIComponent(position),
+				position: encodeURIComponent(decodeURIComponent(position)),
 			}
 		}),
 
@@ -895,7 +948,7 @@ export class ShoplySDK {
 			config,
 			params: {
 				type: 'slider',
-				positions: positions.map(encodeURIComponent).join(',')
+				positions: positions.map(pos => encodeURIComponent(decodeURIComponent(pos))).join(',')
 			}
 		}),
 
@@ -908,7 +961,7 @@ export class ShoplySDK {
 			config,
 			params: {
 				type: 'banner',
-				position: encodeURIComponent(position),
+				position: encodeURIComponent(decodeURIComponent(position)),
 			}
 		}),
 
@@ -921,7 +974,7 @@ export class ShoplySDK {
 			config,
 			params: {
 				type: 'banner',
-				positions: positions.map(encodeURIComponent).join(',')
+				positions: positions.map(pos => encodeURIComponent(decodeURIComponent(pos))).join(',')
 			}
 		}),
 

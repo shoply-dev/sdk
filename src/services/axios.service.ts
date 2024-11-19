@@ -12,6 +12,9 @@ export const transformShoplyConfigToAxiosConfig = (
 	if (!accessToken && config?.getAccessToken) accessToken = config.getAccessToken();
 	if (!accessToken && context?.accessToken) accessToken = context.accessToken;
 
+	let userId = config?.userId;
+	if (!userId && config?.getUserId) userId = config.getUserId();
+
 	const obj: CreateAxiosDefaults = {
 		baseURL: `${config.baseURL.replace(/\/$/, '')}/sdk/${config.version ?? 'v1'}`,
 		timeout: config.timeout ?? 10000,
@@ -26,7 +29,7 @@ export const transformShoplyConfigToAxiosConfig = (
 			lang: config.lang,
 			pricelistId: config.pricelistId,
 			skipTransform: config.skipTransform ? 'true' : undefined,
-			userId: config.userId ?? config.getUserId?.(),
+			userId: userId ? userId : undefined,
 		}
 	};
 

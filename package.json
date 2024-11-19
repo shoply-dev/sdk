@@ -1,6 +1,6 @@
 {
   "name": "shoply-sdk",
-  "version": "0.0.10",
+  "version": "0.0.11",
   "license": "MIT",
   "description": "SDK for Shoply Stores",
   "main": "dist/index.js",

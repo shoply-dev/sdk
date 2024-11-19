@@ -44,9 +44,9 @@ export interface ProductsQueryParams extends GlobalTypes.DefaultQueryParams {
 	/** Price of products. */
 	price?: number;
 	/** Minimum price for products */
-	'price-min': number;
+	'price-min'?: number;
 	/** Maximum price for products */
-	'price-max': number;
+	'price-max'?: number;
 }
 
 export interface ProductCategoryInterface {

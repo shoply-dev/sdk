@@ -50,6 +50,8 @@ export interface CategoryAttribute {
 	name: string | Record<string, string>;
 	/** Attribute type */
 	type: AttributeTypesEnum;
+	/** Whether to show attributes in product spec table */
+	isIncludedInProductSpecificationTable?: boolean;
 	/** Whether attribute is enabled */
 	isEnabled?: boolean;
 	/** Whether attribute is required */
