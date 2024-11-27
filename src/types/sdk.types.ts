@@ -119,6 +119,20 @@ export interface ShoplySDKUserMethods {
 	) => Promise<ShoplySDKResponse<{
 		passwordUpdated: boolean;
 	}>>;
+
+	/** Get wishlist for user */
+	getWishlist: (
+		query?: ProductTypes.UserWishlistQueryParams,
+		config?: ConfigTypes.ShoplySDKConfigForSingleRequest
+	) => Promise<ShoplySDKResponse<{ wishlist: ProductTypes.Product[] }>>;
+
+	/** Update wishlist. If action is sent, that action is sent to server. If not, the action is opposite of current state. For example, if product is in wishlist, it will be removed if action is not sent, or 'remove' action is sent. If action is 'add' nothing will happen as item is already in wishlist. */
+	updateWishlist: (
+		/** Id or SKU of product to add/remove */
+		identifier: string,
+		action?: 'add' | 'remove',
+		config?: ConfigTypes.ShoplySDKConfigForSingleRequest
+	) => Promise<ShoplySDKResponse<{ wishlistUpdated: boolean }>>;
 }
 
 export interface ShoplySDKCategoryMethods {
@@ -227,6 +241,23 @@ export interface ShoplySDKCartMethods {
 
 	/** Clear cart */
 	clearCart: (
+		config?: ConfigTypes.ShoplySDKConfigForSingleRequest
+	) => Promise<ShoplySDKResponse<{
+		userId: string;
+		cart: CartTypes.Cart;
+	}>>;
+
+	/** Add coupon code to cart */
+	addCouponCode: (
+		couponCode: string,
+		config?: ConfigTypes.ShoplySDKConfigForSingleRequest
+	) => Promise<ShoplySDKResponse<{
+		userId: string;
+		cart: CartTypes.Cart;
+	}>>;
+
+	/** Remove coupon code from cart */
+	removeCouponCode: (
 		config?: ConfigTypes.ShoplySDKConfigForSingleRequest
 	) => Promise<ShoplySDKResponse<{
 		userId: string;

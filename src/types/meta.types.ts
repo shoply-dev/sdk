@@ -27,7 +27,7 @@ export interface ShippingMethodInterface {
     value: string;
 
     cost: number;
-    freeFrom: number;
+    freeShippingFrom: number;
     countries: {
         label: string;
         value: string;

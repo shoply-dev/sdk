@@ -31,6 +31,8 @@ export interface Cart {
 	_id: string;
 	/** User id for cart operations */
 	userId: string;
+	/** Coupon code for the cart - if applied and valid */
+	couponCode?: string | null;
 	/** Array of cart items */
 	items: CartItem[];
 }

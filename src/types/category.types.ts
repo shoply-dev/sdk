@@ -1,4 +1,4 @@
-import type { AssetInteface, AttributeTypesEnum, DefaultQueryParams } from "./global.types";
+import type { AssetInteface, AttributeTypesEnum, DefaultQueryParams, SaleUnitsEnum } from "./global.types";
 
 
 export interface CategoryQueryParams extends DefaultQueryParams {
@@ -6,6 +6,8 @@ export interface CategoryQueryParams extends DefaultQueryParams {
 	parent?: string;
 	/** Allowed sort fields */
 	sortField?: 'id' | 'createdAt' | 'updatedAt' | 'name' | 'breadcrumb';
+	/** How many featured products to return. If it's floor is positive integer - only featured categories along with their featured products will be sent */
+	featuredProducts?: number;
 }
 
 export interface BrandsQueryParams extends DefaultQueryParams {
@@ -133,4 +135,31 @@ export interface BrandInTree {
 export interface BrandTree extends BrandInTree {
 	/** Children brands of brand - if any */
 	children?: BrandTree[];
+}
+
+export interface CategoryFeaturedProductInterface {
+	/** Id of product. Use instead of id. */
+	_id: string;
+	/** Id of product. Use _id instead */
+	id: string;
+	/** SKU of product */
+	sku: string;
+	/** Name of product. If skipTransform in config is true - will be an object whose keys are different language keys and values actual names. If no skipTransform is passed to config -will be string - a name for passed (or default) lang */
+	name: string | Record<string, string>;
+	/** Number of items in stock */
+	inStock?: null | number;
+	/** Thumbnail image for the product */
+	thumbnail?: AssetInteface;
+	/** Price for product - only present if 'onlySingleQuantity' is true and method is 'getProducts' */
+	price?: number;
+	/** Regular price for product - only present if 'onlySingleQuantity' is true and method is 'getProducts' */
+	regularPrice?: null | number;
+	/** From quantity - only present if 'onlySingleQuantity' is true and method is 'getProducts' */
+	fromQuantity?: number;
+	/** VAT rate - only present if 'onlySingleQuantity' is true and method is 'getProducts' */
+	vatRate?: number;
+	/** Sale percentage - only shown when store wants to show sale percentage and regular price is larger than price - so there is a sale */
+	salePercentage?: number;
+	/** Sales unit - only present if 'onlySingleQuantity' is true and method is 'getProducts' */
+	salesUnit?: SaleUnitsEnum;
 }

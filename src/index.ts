@@ -402,6 +402,63 @@ export class ShoplySDK {
 			data,
 			config
 		}),
+
+		getWishlist: async (
+			query?: ProductTypes.UserWishlistQueryParams,
+			config?: ConfigTypes.ShoplySDKConfigForSingleRequest
+		) => {
+			const params: any = {
+				...(query || {}),
+				omit: query?.omitFields ? (
+					typeof query.omitFields === 'string' ? (
+						'*'
+					) : (
+						Array.isArray(query.omitFields) && query.omitFields.length > 0 ? (
+							query.omitFields.join(',')
+						) : (
+							undefined
+						)
+					)
+				) : (
+					undefined
+				),
+			};
+			delete params.omitFields;
+
+			const response = await this.fetch<{
+				wishlist: ProductTypes.Product[];
+			}>({
+				url: '/users/wishlist',
+				method: 'GET',
+				params: {
+					...(query || {}),
+				},
+				config
+			});
+
+			return response;
+		},
+
+		updateWishlist: async (
+			identifier: string,
+			action?: 'add' | 'remove',
+			config?: ConfigTypes.ShoplySDKConfigForSingleRequest
+		) => {
+			const body: any = {
+				productId: identifier,
+			};
+			if (action) body['action'] = action;
+			const response = await this.fetch<{
+				wishlistUpdated: boolean
+			}>({
+				method: 'POST',
+				url: '/users/wishlist',
+				data: body,
+				config
+			});
+
+			return response;
+		}
 	};
 
 	categories: SDKTypes.ShoplySDKCategoryMethods = {
@@ -557,10 +614,10 @@ export class ShoplySDK {
 				onlySingleQuantity: query?.onlySingleQuantity ? 'true' : undefined,
 				category: query?.category ? (
 					typeof query.category === 'string' ? (
-						encodeURIComponent(decodeURIComponent(query.category))
+						query.category
 					) : (
 						Array.isArray(query.category) && query.category.length > 0 ? (
-							query.category.map(cat => encodeURIComponent(decodeURIComponent(cat))).join(',')
+							query.category.join(',')
 						) : (
 							undefined
 						)
@@ -568,10 +625,10 @@ export class ShoplySDK {
 				) : undefined,
 				brand: query?.brand ? (
 					typeof query.brand === 'string' ? (
-						encodeURIComponent(decodeURIComponent(query.brand))
+						query.brand
 					) : (
 						Array.isArray(query.brand) && query.brand.length > 0 ? (
-							query.brand.map(br => encodeURIComponent(decodeURIComponent(br))).join(',')
+							query.brand.join(',')
 						) : (
 							undefined
 						)
@@ -579,10 +636,10 @@ export class ShoplySDK {
 				) : undefined,
 				model: query?.brandModel ? (
 					typeof query.brandModel === 'string' ? (
-						encodeURIComponent(decodeURIComponent(query.brandModel))
+						query.brandModel
 					) : (
 						Array.isArray(query.brandModel) && query.brandModel.length > 0 ? (
-							query.brandModel.map(bm => encodeURIComponent(decodeURIComponent(bm))).join(',')
+							query.brandModel.join(',')
 						) : (
 							undefined
 						)
@@ -750,6 +807,64 @@ export class ShoplySDK {
 
 			return response;
 		},
+
+		addCouponCode: async (
+			couponCode: string,
+			config?: ConfigTypes.ShoplySDKConfigForSingleRequest
+		) => {
+			const response = await this.fetch<{
+				userId: string;
+				cart: CartTypes.Cart;
+			}>({
+				method: 'POST',
+				url: '/cart',
+				data: {
+					action: 'add-coupon',
+					couponCode,
+				},
+				config,
+			});
+
+			if (response.data) {
+				const contextObj: ContextTypes.ShoplySDKContext = {
+					userId: response.data.userId,
+					cart: response.data.cart,
+				};
+				this.config.callbacks?.onUserId?.(contextObj.userId);
+				this.config.callbacks?.onCart?.(contextObj.cart);
+				this.setContext(contextObj);
+			}
+
+			return response;
+		},
+
+		removeCouponCode: async (
+			config?: ConfigTypes.ShoplySDKConfigForSingleRequest
+		) => {
+			const response = await this.fetch<{
+				userId: string;
+				cart: CartTypes.Cart;
+			}>({
+				method: 'POST',
+				url: '/cart',
+				data: {
+					action: 'remove-coupon',
+				},
+				config,
+			});
+
+			if (response.data) {
+				const contextObj: ContextTypes.ShoplySDKContext = {
+					userId: response.data.userId,
+					cart: response.data.cart,
+				};
+				this.config.callbacks?.onUserId?.(contextObj.userId);
+				this.config.callbacks?.onCart?.(contextObj.cart);
+				this.setContext(contextObj);
+			}
+
+			return response;
+		}
 	}
 
 	orders: SDKTypes.ShoplySDKOrderMethods = {
@@ -935,7 +1050,7 @@ export class ShoplySDK {
 			config,
 			params: {
 				type: 'slider',
-				position: encodeURIComponent(decodeURIComponent(position)),
+				position,
 			}
 		}),
 
@@ -948,7 +1063,7 @@ export class ShoplySDK {
 			config,
 			params: {
 				type: 'slider',
-				positions: positions.map(pos => encodeURIComponent(decodeURIComponent(pos))).join(',')
+				positions: positions.join(',')
 			}
 		}),
 
@@ -961,7 +1076,7 @@ export class ShoplySDK {
 			config,
 			params: {
 				type: 'banner',
-				position: encodeURIComponent(decodeURIComponent(position)),
+				position,
 			}
 		}),
 
@@ -974,7 +1089,7 @@ export class ShoplySDK {
 			config,
 			params: {
 				type: 'banner',
-				positions: positions.map(pos => encodeURIComponent(decodeURIComponent(pos))).join(',')
+				positions: positions.join(',')
 			}
 		}),
 

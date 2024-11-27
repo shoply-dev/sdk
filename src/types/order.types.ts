@@ -2,19 +2,19 @@ import type * as GlobalTypes from './global.types';
 
 export interface OrderUser {
     /** Name of user - both first and last */
-    name?: string;
+    name: string;
     /** Email of user */
-    email?: string;
+    email: string;
     /** Phone of user */
-    phone?: string;
+    phone: string;
     /** Country - two letter code */
-    country?: string;
+    country: string;
     /** City */
-    city?: string;
+    city: string;
     /** Street */
-    street?: string;
+    street: string;
     /** Zip */
-    zip?: string;
+    zip: string;
 }
 
 export interface OrderItem {

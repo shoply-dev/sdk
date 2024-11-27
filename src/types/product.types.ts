@@ -24,7 +24,10 @@ export type ProductOmitFieldsEnum =
 	| 'fromQuantity'
 	| 'salesUnit'
 	| 'condition'
-	| 'warehouses';
+	| 'warehouses'
+	| 'ribbon';
+
+export type SpecialProductTypesEnum = 'featured' | 'sale' | 'new';
 
 export interface ProductsQueryParams extends GlobalTypes.DefaultQueryParams {
 	/** Whether to calculate prices only for single quantity. If true - product object will have fields: price, regularPrice, fromQuantity, vatRate, and salesUnit. If not true or not passed - product object will have prices property with array of prices config (each of which has those fields) */
@@ -47,6 +50,15 @@ export interface ProductsQueryParams extends GlobalTypes.DefaultQueryParams {
 	'price-min'?: number;
 	/** Maximum price for products */
 	'price-max'?: number;
+	/** Special type of products: featured, on-sale and new products */
+	type?: SpecialProductTypesEnum;
+}
+
+export interface UserWishlistQueryParams {
+	/** Whether to calculate prices only for single quantity. If true - product object will have fields: price, regularPrice, fromQuantity, vatRate, and salesUnit. If not true or not passed - product object will have prices property with array of prices config (each of which has those fields) */
+	onlySingleQuantity?: boolean;
+	/** Omit fields */
+	omitFields?: ProductOmitFieldsEnum[] | '*';
 }
 
 export interface ProductCategoryInterface {
@@ -92,6 +104,8 @@ export interface ProductPriceInterface {
 	vatRate: number;
 	/** Sales unit */
 	salesUnit: GlobalTypes.SaleUnitsEnum;
+	/** Sale percentage - if present - means that store wants to show sale percentage and that regular price is larger than price - so there is a sale */
+	salePercentage?: number;
 }
 
 export interface RelationsProduct {
@@ -182,6 +196,8 @@ export interface Product {
 	fromQuantity?: number;
 	/** VAT rate - only present if 'onlySingleQuantity' is true and method is 'getProducts' */
 	vatRate?: number;
+	/** Sale percentage - only shown when store wants to show sale percentage and regular price is larger than price - so there is a sale */
+	salePercentage?: number;
 	/** Sales unit - only present if 'onlySingleQuantity' is true and method is 'getProducts' */
 	salesUnit?: GlobalTypes.SaleUnitsEnum;
 	/** Product relations */
@@ -193,8 +209,17 @@ export interface Product {
 	};
 	/** Product variations */
 	variations?: VariationProduct[];
+	/** Add-On products - products that sell as addons to current product */
+	addOnProducts?: {
+		/** Name of the relation */
+		name: string;
+		/** Products in relation */
+		products: RelationsProduct[];
+	};
 	/** Created at datetime string */
 	createdAt: string;
 	/** Updated at datetime string */
 	updatedAt: string;
+	/** Ribbon to display. If has value - always show as date check was done on server */
+	ribbon?: string | Record<string, string> | null;
 }
