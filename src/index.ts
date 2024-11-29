@@ -303,12 +303,21 @@ export class ShoplySDK {
 					this.config.callbacks?.onCart?.(contextObj.cart);
 				}
 
-				if (accessToken) {
-					contextObj.accessToken = accessToken;
-					this.config.callbacks?.onAccessToken?.(accessToken);
-				}
-
 				this.setContext(contextObj);
+			} else {
+				this.setContext({
+					user: undefined,
+					userId: undefined,
+					cart: undefined,
+					accessToken: undefined,
+					refreshToken: undefined,
+				});
+
+				this.config.callbacks?.onUser?.(this.context.user);
+				this.config.callbacks?.onUserId?.(this.context.userId);
+				this.config.callbacks?.onCart?.(this.context.cart);
+				this.config.callbacks?.onAccessToken?.(this.context.accessToken);
+				this.config.callbacks?.onRefreshToken?.(this.context.refreshToken);
 			}
 
 			return response;
