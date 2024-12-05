@@ -126,8 +126,9 @@ export interface CurrencyDataInterface {
 export interface ProductsSitemapDataInterface {
     _id: string;
     name: Record<string, string>;
-    slug: Record<string, string>;
+    sku: string;
     images: GlobalTypes.AssetInteface[];
+    updatedAt: string;
 }
 
 export interface CategoriesSitemapDataInterface {
@@ -135,6 +136,7 @@ export interface CategoriesSitemapDataInterface {
     name: Record<string, string>;
     breadcrumb: Record<string, string>;
     image?: GlobalTypes.AssetInteface | null;
+    updatedAt: string;
 }
 
 export interface PagesSitemapDataInterface {
@@ -143,6 +145,7 @@ export interface PagesSitemapDataInterface {
     title: string;
     slug: string;
     image?: GlobalTypes.AssetInteface | null;
+    updatedAt: string;
 }
 
 export interface SitemapDataInterface {

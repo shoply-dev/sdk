@@ -105,6 +105,12 @@ export interface Category {
 	createdAt: string;
 	/** Updated at datetime string */
 	updatedAt: string;
+	/** SEO for the category */
+	seo?: {
+		title?: Record<string, string>;
+		description?: Record<string, string>;
+		image?: AssetInteface;
+	}
 }
 
 export interface CategoryInTree {

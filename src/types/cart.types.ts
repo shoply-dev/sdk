@@ -1,4 +1,5 @@
 import type { ImageInterface } from "./global.types";
+import type * as ProductTypes from './product.types';
 
 export interface CartItem {
 	/** Product id. Same as productId */
@@ -24,6 +25,13 @@ export interface CartItem {
 	vatRate: number;
 	/** Product sale units. Defaults to 'pc'. */
 	salesUnit: string;
+	/** Variation attributes */
+	variationAttributes?: VariationAttributeInCart[];
+}
+
+export interface VariationAttributeInCart extends ProductTypes.ProductAttributeInterface {
+	/** In variation attribute in cart, name of the product is always multilang - record where each key is lang. Example: {ba: 'Neko ime', en: 'Some name'} */
+	name: Record<string, string>;
 }
 
 export interface Cart {
