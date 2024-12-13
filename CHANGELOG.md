@@ -1,5 +1,11 @@
 # shoply-sdk
 
+## 0.0.15
+
+### Patch Changes
+
+- added fixes for types + 2 apis - newsletter subscribe and get order items for order success page
+
 ## 0.0.14
 
 ### Patch Changes

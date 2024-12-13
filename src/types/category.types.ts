@@ -110,7 +110,9 @@ export interface Category {
 		title?: Record<string, string>;
 		description?: Record<string, string>;
 		image?: AssetInteface;
-	}
+	};
+	/** Featured products - only supplied if "featuredProducts" prop is passed */
+	featuredProducts?: CategoryFeaturedProductInterface[];
 }
 
 export interface CategoryInTree {

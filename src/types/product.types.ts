@@ -222,4 +222,10 @@ export interface Product {
 	updatedAt: string;
 	/** Ribbon to display. If has value - always show as date check was done on server */
 	ribbon?: string | Record<string, string> | null;
+	/** SEO for the category */
+	seo?: {
+		title?: Record<string, string> | string;
+		description?: Record<string, string> | string;
+		image?: GlobalTypes.AssetInteface;
+	}
 }

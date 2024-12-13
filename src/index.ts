@@ -899,6 +899,15 @@ export class ShoplySDK {
 			config,
 		}),
 
+		getOrderItems: async (
+			identifier: string,
+			config?: ConfigTypes.ShoplySDKConfigForSingleRequest
+		) => this.fetch<OrderTypes.PublicOrderData>({
+			method: 'GET',
+			url: `/orders/${encodeURIComponent(decodeURIComponent(identifier))}/items`,
+			config,
+		}),
+
 		createOrder: async (
 			data: {}, // TODO
 			config?: ConfigTypes.ShoplySDKConfigForSingleRequest
@@ -1134,6 +1143,17 @@ export class ShoplySDK {
 		) => this.fetch<MetaTypes.SitemapDataInterface>({
 			method: 'GET',
 			url: `/meta/sitemap-data/${type || 'all'}`,
+			config,
+		}),
+
+		subscribeToNewsletter: async (
+			email: string,
+			lang?: string,
+			config?: ConfigTypes.ShoplySDKConfigForSingleRequest
+		) => this.fetch<MetaTypes.NewsletterMailingListEntryInterface>({
+			method: 'POST',
+			url: '/meta/newsletter/subscribe',
+			data: { email, lang },
 			config,
 		}),
 	}

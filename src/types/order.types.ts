@@ -61,6 +61,30 @@ export interface Order {
     createdAt: string;
     /** Updated at datetime string */
     updatedAt: string;
+    /** Vat */
+    vat?: number;
+}
+
+export interface PublicOrderData {
+    /** Order id. Use instead of id. */
+    _id: string;
+    /** Order number */
+    orderNumber: string;
+    /** Billing data */
+    /** Array of order items */
+    items: OrderItem[];
+    /** Status of order */
+    status: 'pending' | 'completed' | 'cancelled';
+    /** Subtotal on order */
+    subtotal?: number;
+    /** Shipping cost */
+    shippingCost?: number;
+    /** Total cost of order */
+    total: number;
+    /** Referrence for the item */
+    reference?: string;
+    /** Vat */
+    vat?: number;
 }
 
 export interface OrderInputData {

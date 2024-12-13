@@ -155,3 +155,10 @@ export interface SitemapDataInterface {
 }
 
 export type SitemapDataTypeEnum = 'products' | 'categories' | 'pages';
+
+export interface NewsletterMailingListEntryInterface {
+    type: 'regular' | 'test';
+    email: string;
+    lang: string;
+    isActive: boolean;
+}

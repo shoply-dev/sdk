@@ -282,6 +282,13 @@ export interface ShoplySDKOrderMethods {
 		config?: ConfigTypes.ShoplySDKConfigForSingleRequest
 	) => Promise<ShoplySDKResponse<OrderTypes.Order>>;
 
+	/** Get public order details - mostly items - for an order. Use to fetch order data on success redirect page */
+	getOrderItems: (
+		/** Id or orderNumber of order */
+		identifier: string,
+		config?: ConfigTypes.ShoplySDKConfigForSingleRequest
+	) => Promise<ShoplySDKResponse<OrderTypes.PublicOrderData>>;
+
 	/** Create order */
 	createOrder: (
 		data: OrderTypes.OrderData, // TODO
@@ -409,4 +416,11 @@ export interface ShoplySDKMetaMethods {
 		type?: MetaTypes.SitemapDataTypeEnum,
 		config?: ConfigTypes.ShoplySDKConfigForSingleRequest
 	) => Promise<ShoplySDKResponse<MetaTypes.SitemapDataInterface>>;
+
+	/** Subscribe to newsletter */
+	subscribeToNewsletter: (
+		email: string,
+		lang?: string,
+		config?: ConfigTypes.ShoplySDKConfigForSingleRequest
+	) => Promise<ShoplySDKResponse<MetaTypes.NewsletterMailingListEntryInterface>>;
 }
