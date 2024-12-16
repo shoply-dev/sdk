@@ -1,5 +1,11 @@
 # shoply-sdk
 
+## 0.0.16
+
+### Patch Changes
+
+- added variation attributes to Product interface
+
 ## 0.0.15
 
 ### Patch Changes

@@ -1,4 +1,5 @@
 import type * as GlobalTypes from './global.types';
+import type { ProductVariationAttribute } from './product.types';
 
 export interface OrderUser {
     /** Name of user - both first and last */
@@ -19,7 +20,13 @@ export interface OrderUser {
 
 export interface OrderItem {
     /** Product */
-    product: {id: string, name: string | Record<string, string>, sku: string, thumbnail: GlobalTypes.AssetInteface};
+    product: {
+        id: string;
+        name: string | Record<string, string>;
+        sku: string;
+        thumbnail: GlobalTypes.AssetInteface;
+        variationAttributes?: ProductVariationAttribute[];
+    };
     /** Quantity of items */
     quantity: number;
     /** Price of product - per item */

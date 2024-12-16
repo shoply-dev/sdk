@@ -20,6 +20,8 @@ export type ProductOmitFieldsEnum =
 	| 'seo'
 	| 'relations'
 	| 'variations'
+	| 'variationAttributes'
+	| 'addOnProducts'
 	| 'vatRate'
 	| 'fromQuantity'
 	| 'salesUnit'
@@ -228,4 +230,11 @@ export interface Product {
 		description?: Record<string, string> | string;
 		image?: GlobalTypes.AssetInteface;
 	}
+	/** Variation attributes */
+	variationAttributes?: ProductVariationAttribute[];
+}
+
+export interface ProductVariationAttribute extends ProductAttributeInterface {
+	/** In variation attribute in cart, name of the product is always multilang - record where each key is lang. Example: {ba: 'Neko ime', en: 'Some name'} */
+	name: Record<string, string>;
 }
