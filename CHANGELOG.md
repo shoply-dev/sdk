@@ -1,5 +1,11 @@
 # shoply-sdk
 
+## 0.0.17
+
+### Patch Changes
+
+- added dev methods + 1 meta method
+
 ## 0.0.16
 
 ### Patch Changes

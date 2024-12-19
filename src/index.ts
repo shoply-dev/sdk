@@ -1027,6 +1027,14 @@ export class ShoplySDK {
 			config,
 		}),
 
+		getTextBanner: async (
+			config?: ConfigTypes.ShoplySDKConfigForSingleRequest
+		) => this.fetch<MetaTypes.TextVisualInterface>({
+			method: 'GET',
+			url: '/meta/visuals/text',
+			config,
+		}),
+
 		getSliders: async (
 			query?: GlobalTypes.DefaultQueryParams,
 			config?: ConfigTypes.ShoplySDKConfigForSingleRequest
@@ -1156,6 +1164,49 @@ export class ShoplySDK {
 			data: { email, lang },
 			config,
 		}),
+	}
+
+	dev: SDKTypes.ShoplySDKDevMethods = {
+		openVisualEditor: async (
+			type: 'banner' | 'slider' | 'category',
+			position: string,
+			lang?: string,
+			config?: ConfigTypes.ShoplySDKConfigForSingleRequest
+		) => {
+			if (!type || !['banner', 'slider', 'category'].includes(type) || !lang || !position) {
+				this._log('Invalid parameters for openVisualEditor method. Make sure to include all arguments: type, lang and position', 'error');
+				return;
+			}
+
+			if (typeof window !== 'undefined') {
+				const location = window.location;
+				const response = await this.fetch<{
+					url: string;
+				}>({
+					method: 'POST',
+					url: '/dev/open-visual-editor',
+					data: {
+						type,
+						lang: lang ?? (config?.lang ?? this.config.lang),
+						position,
+
+						origin: location.origin,
+						href: location.href,
+					},
+					config,
+				});
+
+				if (response.error) {
+					this._log(response.error.message, 'error');
+				}
+
+				if (response.data?.url) {
+					window.location.replace(response.data.url);
+				}
+			} else {
+				this._log('Visual editor is only available in browser environment', 'error');
+			}
+		}
 	}
 };
 

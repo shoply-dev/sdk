@@ -353,6 +353,11 @@ export interface ShoplySDKMetaMethods {
 		config?: ConfigTypes.ShoplySDKConfigForSingleRequest
 	) => Promise<ShoplySDKResponse<MetaTypes.SocialsInterface>>;
 
+	/** Get text banner - text banner is the ribbon with text that goes on top of the page */
+	getTextBanner: (
+		config?: ConfigTypes.ShoplySDKConfigForSingleRequest
+	) => Promise<ShoplySDKResponse<MetaTypes.TextVisualInterface>>;
+
 	/** Paginate sliders. If no query is passed - behaves as 'get all sliders' and will return all items. But if at least one param is present in query (page/entries/sortField/sortType/search) - returns paginated results for LANG in question */
 	getSliders: (
 		query?: GlobalTypes.DefaultQueryParams,
@@ -423,4 +428,14 @@ export interface ShoplySDKMetaMethods {
 		lang?: string,
 		config?: ConfigTypes.ShoplySDKConfigForSingleRequest
 	) => Promise<ShoplySDKResponse<MetaTypes.NewsletterMailingListEntryInterface>>;
+}
+
+export interface ShoplySDKDevMethods {
+	/** Open dashboard to add/edit banner/slider/category visual */
+	openVisualEditor: (
+		type: 'banner' | 'slider' | 'category',
+		position: string,
+		lang?: string,
+		config?: ConfigTypes.ShoplySDKConfigForSingleRequest
+	) => void;
 }

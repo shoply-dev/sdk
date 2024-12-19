@@ -2,7 +2,7 @@ import type * as GlobalTypes from './global.types';
 
 export interface VisualsInterface {
     _id: string;
-    image: {
+    image?: {
         desktop: GlobalTypes.AssetInteface;
         tablet: GlobalTypes.AssetInteface;
         mobile: GlobalTypes.AssetInteface;
@@ -10,6 +10,21 @@ export interface VisualsInterface {
     position: string;
     link?: string;
     alt?: string;
+    text?: {
+        text1: string;
+        text2?: string;
+        text3?: string;
+    }
+}
+
+export interface TextVisualInterface {
+    _id: string;
+    link: string;
+    text: {
+        text1: string;
+        text2?: string;
+        text3?: string;
+    }
 }
 
 export interface PaymentMethodInterface {
