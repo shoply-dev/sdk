@@ -301,6 +301,13 @@ export interface ShoplySDKOrderMethods {
 
 		_redirectUrl?: string;
 		_redirectHtml?: string;
+		_scripts?: {
+			src?: string;
+			innerHTML?: string;
+			type?: string;
+			async?: boolean;
+			defer?: boolean;
+		}[];
 	}>>;
 
 	/** Check order payment status - Remember to call this method from success page to trigger check */
@@ -352,11 +359,6 @@ export interface ShoplySDKMetaMethods {
 	getSocialLinks: (
 		config?: ConfigTypes.ShoplySDKConfigForSingleRequest
 	) => Promise<ShoplySDKResponse<MetaTypes.SocialsInterface>>;
-
-	/** Get text banner - text banner is the ribbon with text that goes on top of the page */
-	getTextBanner: (
-		config?: ConfigTypes.ShoplySDKConfigForSingleRequest
-	) => Promise<ShoplySDKResponse<MetaTypes.TextVisualInterface>>;
 
 	/** Paginate sliders. If no query is passed - behaves as 'get all sliders' and will return all items. But if at least one param is present in query (page/entries/sortField/sortType/search) - returns paginated results for LANG in question */
 	getSliders: (
@@ -431,11 +433,11 @@ export interface ShoplySDKMetaMethods {
 }
 
 export interface ShoplySDKDevMethods {
-	/** Open dashboard to add/edit banner/slider/category visual */
+	/** Open dashboard to add/edit banner/slider/category visual. If string is returned - string is error message. */
 	openVisualEditor: (
 		type: 'banner' | 'slider' | 'category',
 		position: string,
 		lang?: string,
 		config?: ConfigTypes.ShoplySDKConfigForSingleRequest
-	) => void;
+	) => Promise<void | string>;
 }
