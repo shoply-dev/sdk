@@ -1,5 +1,11 @@
 # shoply-sdk
 
+## 0.0.19
+
+### Patch Changes
+
+- added api for contact us email + TS fixes
+
 ## 0.0.18
 
 ### Patch Changes

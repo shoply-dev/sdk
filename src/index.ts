@@ -325,6 +325,7 @@ export class ShoplySDK {
 
 		forgotPassword: async (
 			email: string,
+			redirectUrl?: string,
 			config?: ConfigTypes.ShoplySDKConfigForSingleRequest
 		) => this.fetch<{
 			email: string;
@@ -332,7 +333,7 @@ export class ShoplySDK {
 		}>({
 			url: '/users/forgot-password',
 			method: 'POST',
-			data: { email },
+			data: { email, redirectUrl },
 			config
 		}),
 
@@ -1177,6 +1178,16 @@ export class ShoplySDK {
 			data: { email, lang },
 			config,
 		}),
+
+		sendContactMessage: async (
+			data: MetaTypes.SendContactMessageInputDataInterface,
+			config?: ConfigTypes.ShoplySDKConfigForSingleRequest
+		) => this.fetch<{ messageSent?: boolean }>({
+			method: 'POST',
+			url: '/meta/contact/send-message',
+			data,
+			config,
+		})
 	}
 
 	dev: SDKTypes.ShoplySDKDevMethods = {

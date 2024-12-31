@@ -74,9 +74,10 @@ export interface ShoplySDKUserMethods {
 		cart?: CartTypes.Cart;
 	}>>;
 
-	/** Create reset-password-code for user who forgot their email address */
+	/** Create reset-password-code for user who forgot their email address. If you specify redirectUrl, you can place {{USER_ID}} in url query and it will be replaced with user's id, and {{CODE}} will be replaced with actual code for password reset, and then you can extract them on frontend */
 	forgotPassword: (
 		email: string,
+		redirectUrl?: string,
 		config?: ConfigTypes.ShoplySDKConfigForSingleRequest
 	) => Promise<ShoplySDKResponse<{
 		email: string;
@@ -430,6 +431,12 @@ export interface ShoplySDKMetaMethods {
 		lang?: string,
 		config?: ConfigTypes.ShoplySDKConfigForSingleRequest
 	) => Promise<ShoplySDKResponse<MetaTypes.NewsletterMailingListEntryInterface>>;
+
+	/** Send contact message */
+	sendContactMessage: (
+		data: MetaTypes.SendContactMessageInputDataInterface,
+		config?: ConfigTypes.ShoplySDKConfigForSingleRequest
+	) => Promise<ShoplySDKResponse<{ messageSent?: boolean }>>;
 }
 
 export interface ShoplySDKDevMethods {

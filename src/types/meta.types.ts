@@ -168,3 +168,10 @@ export interface NewsletterMailingListEntryInterface {
     lang: string;
     isActive: boolean;
 }
+
+export interface SendContactMessageInputDataInterface {
+    name: string;
+    email: string;
+    subject: string;
+    message: string;
+}
