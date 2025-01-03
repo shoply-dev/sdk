@@ -302,12 +302,14 @@ export interface ShoplySDKOrderMethods {
 
 		_redirectUrl?: string;
 		_redirectHtml?: string;
+		_redirectBody?: string;
 		_scripts?: {
 			src?: string;
 			innerHTML?: string;
 			type?: string;
 			async?: boolean;
 			defer?: boolean;
+			id?: string;
 		}[];
 	}>>;
 

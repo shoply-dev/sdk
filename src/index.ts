@@ -920,12 +920,14 @@ export class ShoplySDK {
 				cart: CartTypes.Cart;
 				_redirectUrl?: string;
 				_redirectHtml?: string;
+				_redirectBody?: string;
 				_scripts?: {
 					src?: string;
 					innerHTML?: string;
 					type?: string;
 					async?: boolean;
 					defer?: boolean;
+					id?: string;
 				}[];
 			}>({
 				method: 'POST',
@@ -951,8 +953,13 @@ export class ShoplySDK {
 
 				if (response.data._redirectHtml) {
 					if (typeof document !== 'undefined') {
-						// response.data._redirectHtml is body tag. replace current body with this one
-						document.body.innerHTML = response.data._redirectHtml;
+						document.write(response.data._redirectHtml);
+					}
+				}
+
+				if (response.data._redirectBody) {
+					if (typeof document !== 'undefined') {
+						document.body.innerHTML = response.data._redirectBody;
 					}
 				}
 
@@ -962,7 +969,7 @@ export class ShoplySDK {
 							if (!obj) continue;
 							const script = document.createElement('script');
 							for (const key in obj) {
-								if (key && key in obj && obj[key as 'src'] && typeof obj[key as 'src'] === 'string') script[key as 'src'] = obj![key! as 'src'] as string;
+								if (key && key in obj && obj[key as 'src']) script[key as 'src'] = obj![key! as 'src'] as string;
 							}
 
 							document.body.appendChild(script);

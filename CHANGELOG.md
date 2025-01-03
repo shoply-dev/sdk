@@ -1,5 +1,11 @@
 # shoply-sdk
 
+## 0.0.20
+
+### Patch Changes
+
+- update payment handling
+
 ## 0.0.19
 
 ### Patch Changes
