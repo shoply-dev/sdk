@@ -669,11 +669,14 @@ export class ShoplySDK {
 					undefined
 				),
 			}
+
 			delete params.omitFields;
 			delete params.brandModel;
+			delete params.attributes;
+
 			if (query?.attributes) {
 				for (const key in query.attributes) {
-					params[`attributes.${key}`] = query.attributes[key];
+					params[`attr.${key}`] = Array.isArray(query.attributes[key]) ? query.attributes[key].join('|') : query.attributes[key];
 				}
 			}
 
