@@ -1215,9 +1215,9 @@ export class ShoplySDK {
 
 	chat: SDKTypes.ShoplySDKChatMethods = {
 		getChatScript: () => {
-			if (!this.config.origin) return null;
+			if (!this.config.baseURL) return null;
 
-			const script = `<script src="${this.config.origin}/chat/script" crossorigin="anonymous" async></script>`;
+			const script = `<script src="${this.config.baseURL}/chat/script" crossorigin="anonymous" async></script>`;
 
 			return script;
 		},
@@ -1225,7 +1225,7 @@ export class ShoplySDK {
 			try {
 				if (typeof document !== 'undefined') {
 					const script = document.createElement('script');
-					script.src = `${this.config.origin}/chat/script`;
+					script.src = `${this.config.baseURL}/chat/script`;
 					script.crossOrigin = 'anonymous';
 					script.async = true;
 					document.body.appendChild(script);
