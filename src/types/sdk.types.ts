@@ -441,6 +441,17 @@ export interface ShoplySDKMetaMethods {
 	) => Promise<ShoplySDKResponse<{ messageSent?: boolean }>>;
 }
 
+export interface ShoplySDKChatMethods {
+	/** Get script tag text for chat initialization. If null something went wrong */
+	getChatScript: () => string | null;
+	/** Try to automatically init chat script tag to current document */
+	initChatScript: () => void;
+	/** Show chat for specific product (by SKU) */
+	showChat: (sku: string) => void;
+	/** Hide chat - when user navigates away from product landing page */
+	hideChat: () => void;
+}
+
 export interface ShoplySDKDevMethods {
 	/** Open dashboard to add/edit banner/slider/category visual. If string is returned - string is error message. */
 	openVisualEditor: (

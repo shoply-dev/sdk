@@ -17,6 +17,19 @@ import type * as GlobalTypes from './types/global.types';
 
 const AssetTypesEnum = ['image', 'video', 'document'];
 
+interface ShoplyMiniChatInterface {
+	onLoad?: () => void;
+	showMiniChat?: (data: null | {
+		sku?: string;
+		externalId?: string;
+		platform?: string;
+	}) => void;
+}
+
+declare global {
+	var shoply: ShoplyMiniChatInterface | undefined;
+}
+
 export class ShoplySDK {
 	private axios: AxiosInstance;
 	private context: ContextTypes.ShoplySDKContext = {};
@@ -1199,6 +1212,39 @@ export class ShoplySDK {
 			config,
 		})
 	}
+
+	chat: SDKTypes.ShoplySDKChatMethods = {
+		getChatScript: () => {
+			if (!this.config.origin) return null;
+
+			const script = `<script src="${this.config.origin}/chat/script" crossorigin="anonymous" async></script>`;
+
+			return script;
+		},
+		initChatScript: () => {
+			try {
+				if (typeof document !== 'undefined') {
+					const script = document.createElement('script');
+					script.src = `${this.config.origin}/chat/script`;
+					script.crossOrigin = 'anonymous';
+					script.async = true;
+					document.body.appendChild(script);
+				}
+			} catch (err) {
+				this._log(`Error initializing chat script: ${err}`, 'error');
+			}
+		},
+		showChat: (sku: string) => {
+			if (typeof window !== 'undefined' && window.shoply) {
+				window.shoply.showMiniChat?.({ sku });
+			}
+		},
+		hideChat: () => {
+			if (typeof window !== 'undefined' && window.shoply) {
+				window.shoply.showMiniChat?.(null);
+			}
+		},
+	};
 
 	dev: SDKTypes.ShoplySDKDevMethods = {
 		openVisualEditor: async (
