@@ -442,10 +442,8 @@ export interface ShoplySDKMetaMethods {
 }
 
 export interface ShoplySDKChatMethods {
-	/** Get script tag text for chat initialization. If null something went wrong */
-	getChatScript: () => string | null;
-	/** Try to automatically init chat script tag to current document */
-	initChatScript: () => void;
+	/** Init chat script tag to current document */
+	initChatScript: (sku?: string) => void;
 	/** Show chat for specific product (by SKU) */
 	showChat: (sku: string) => void;
 	/** Hide chat - when user navigates away from product landing page */

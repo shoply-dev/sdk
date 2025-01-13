@@ -1214,20 +1214,22 @@ export class ShoplySDK {
 	}
 
 	chat: SDKTypes.ShoplySDKChatMethods = {
-		getChatScript: () => {
-			if (!this.config.baseURL) return null;
-
-			const script = `<script src="${this.config.baseURL}/chat/script" crossorigin="anonymous" async></script>`;
-
-			return script;
-		},
-		initChatScript: () => {
+		initChatScript: (sku?: string) => {
 			try {
 				if (typeof document !== 'undefined') {
 					const script = document.createElement('script');
 					script.src = `${this.config.baseURL}/chat/script`;
 					script.crossOrigin = 'anonymous';
-					// script.async = true;
+					script.async = true;
+					script.onload = () => {
+						if (sku) {
+							window.shoply = {
+								onLoad: () => {
+									window.shoply?.showMiniChat?.({ sku });
+								}
+							}
+						}
+					}
 					document.body.appendChild(script);
 				}
 			} catch (err) {
