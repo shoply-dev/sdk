@@ -1227,7 +1227,7 @@ export class ShoplySDK {
 					const script = document.createElement('script');
 					script.src = `${this.config.baseURL}/chat/script`;
 					script.crossOrigin = 'anonymous';
-					script.async = true;
+					// script.async = true;
 					document.body.appendChild(script);
 				}
 			} catch (err) {
