@@ -1222,8 +1222,18 @@ export class ShoplySDK {
 					script.crossOrigin = 'anonymous';
 					script.async = true;
 					script.onload = () => {
+						// if (typeof window !== 'undefined' && sku) {
+						// 	if (window.shoply?.showMiniChat) {
+						// 		window.shoply.showMiniChat({ sku });
+						// 	} else {
+						// 		setTimeout(() => {
+						// 			window.shoply?.showMiniChat?.({ sku });
+						// 		}, 1000);
+						// 	}
+						// }
 						if (sku) {
 							window.shoply = {
+								...(window.shoply || {}),
 								onLoad: () => {
 									window.shoply?.showMiniChat?.({ sku });
 								}
