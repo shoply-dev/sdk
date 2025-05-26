@@ -217,7 +217,7 @@ export interface Product {
 		name: string;
 		/** Products in relation */
 		products: RelationsProduct[];
-	};
+	}[];
 	/** Created at datetime string */
 	createdAt: string;
 	/** Updated at datetime string */

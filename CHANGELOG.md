@@ -1,5 +1,11 @@
 # shoply-sdk
 
+## 0.0.27
+
+### Patch Changes
+
+- Update types for addOnProducts
+
 ## 0.0.26
 
 ### Patch Changes
