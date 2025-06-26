@@ -1,4 +1,5 @@
 import type { AssetInteface, AttributeTypesEnum, DefaultQueryParams, SaleUnitsEnum } from "./global.types";
+import type { ProductCategoryInterface } from "./product.types";
 
 
 export interface CategoryQueryParams extends DefaultQueryParams {
@@ -170,4 +171,6 @@ export interface CategoryFeaturedProductInterface {
 	salePercentage?: number;
 	/** Sales unit - only present if 'onlySingleQuantity' is true and method is 'getProducts' */
 	salesUnit?: SaleUnitsEnum;
+	/** Categories of the product - array of attached categories */
+	categories?: ProductCategoryInterface[];
 }
