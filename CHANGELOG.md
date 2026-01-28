@@ -1,5 +1,11 @@
 # shoply-sdk
 
+## 0.0.29
+
+### Patch Changes
+
+- Axios fix - add default params to supplied params in every fetch call
+
 ## 0.0.28
 
 ### Patch Changes

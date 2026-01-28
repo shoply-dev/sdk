@@ -116,7 +116,10 @@ export class ShoplySDK {
 				url: obj.url,
 				method: obj.method,
 				data: obj.data,
-				params: obj.params,
+				params: {
+					...(obj.params || {}),
+					...(config.params || {})
+				},
 			});
 
 			this._log(`response: ${JSON.stringify(response.data)}`);
