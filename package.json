@@ -27,7 +27,8 @@
     "store",
     "ecommerce",
     "shopify",
-    "woocommerce"
+    "woocommerce",
+    "api"
   ],
   "author": "Shoply"
 }
