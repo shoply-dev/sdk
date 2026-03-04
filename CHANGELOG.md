@@ -1,5 +1,11 @@
 # shoply-sdk
 
+## 0.0.30
+
+### Patch Changes
+
+- update contact message interface
+
 ## 0.0.29
 
 ### Patch Changes
