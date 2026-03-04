@@ -174,4 +174,6 @@ export interface SendContactMessageInputDataInterface {
     email: string;
     subject: string;
     message: string;
+    phone?: string;
+    token?: string;
 }
